@@ -1,0 +1,35 @@
+# Release automation: changelog fragments, release pull request and
+# screenshots (phosh-toolkit docs/releases.md, docs/release-channels.md).
+metainfo = "data/de.nexumia.Pulsus.metainfo.xml"
+version-files = ["meson.build", "pulsus/__init__.py"]
+
+# Taken by CI from the built Flatpak at 360×720 and 1000×700, light and
+# dark, with the made-up demo person of pulsus/demo.py (PULSUS_DEMO=1),
+# never real health data. No network is used.
+[screenshots]
+env = { PULSUS_DEMO = "1", TZ = "Europe/Berlin" }
+delay = 6
+
+[[screenshots.shot]]
+name = "today"
+caption = "Today at a glance"
+
+[[screenshots.shot]]
+name = "steps-month"
+caption = "Steps of the last 30 days against your goal"
+actions = ["app.show-metric('steps:month')"]
+
+[[screenshots.shot]]
+name = "heart-rate"
+caption = "Resting heart rate in your own normal range"
+actions = ["app.show-metric('heart-rate')"]
+
+[[screenshots.shot]]
+name = "sleep"
+caption = "Last night's sleep"
+actions = ["app.show-metric('sleep:day')"]
+
+[[screenshots.shot]]
+name = "workout"
+caption = "A workout with the heart rate during it"
+actions = ["app.show-latest-workout"]

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Pulsus
+GenericName=Health Data
+Comment=See the health data of your watch
+Exec=pulsus
+Icon=de.nexumia.Pulsus
+Terminal=false
+Categories=GTK;Utility;
+Keywords=amazfish;watch;smartwatch;fitness;health;steps;heart rate;sleep;workout;
+StartupNotify=true
+X-Purism-FormFactor=Workstation;Mobile;

@@ -18,8 +18,9 @@ def test_version_matches_meson_and_metainfo():
 
 def test_every_module_is_installed():
     meson = (ROOT / "meson.build").read_text()
-    for path in (ROOT / "pulsus").glob("*.py"):
-        assert f"'pulsus/{path.name}'" in meson, path.name
+    for path in (ROOT / "pulsus").rglob("*.py"):
+        name = path.relative_to(ROOT).as_posix()
+        assert f"'{name}'" in meson, name
 
 
 def test_phone_metadata():
@@ -61,7 +62,7 @@ def test_stable_build_from_source_tree():
 def test_own_icons_exist():
     icons = {p.stem for p in (ROOT / "data" / "icons").rglob("*.svg")}
     used = set()
-    for path in (ROOT / "pulsus").glob("*.py"):
+    for path in (ROOT / "pulsus").rglob("*.py"):
         used |= set(re.findall(r'"(pulsus-[a-z0-9-]+-symbolic)"', path.read_text()))
     assert used and used <= icons, used - icons
     meson = (ROOT / "meson.build").read_text()

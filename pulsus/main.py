@@ -19,7 +19,7 @@ def demo_source():
     """PULSUS_DEMO=1: the made-up person of pulsus.demo, written to a
     temporary directory, with temporary settings (screenshots)."""
     from pulsus import demo
-    from pulsus.source import Source
+    from pulsus.data.source import Source
     directory = Path(tempfile.mkdtemp(prefix="pulsus-demo-"))
     os.environ["XDG_CONFIG_HOME"] = str(directory / "config")
     os.environ["XDG_CACHE_HOME"] = str(directory / "cache")
@@ -63,7 +63,7 @@ class Application(Adw.Application):
         if icons.is_dir():
             theme.add_search_path(str(icons))
         from pulsus import settings
-        from pulsus.source import Source
+        from pulsus.data.source import Source
         if os.environ.get("PULSUS_DEMO"):
             self.source = demo_source()
         else:

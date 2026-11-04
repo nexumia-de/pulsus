@@ -7,7 +7,9 @@ from datetime import date, datetime, time, timedelta
 
 import pytest
 
-from pulsus import demo, store
+from pulsus import data as store
+from pulsus import demo
+from pulsus.data.values import KIND_SLEEP
 
 
 def make_db(path, minutes):
@@ -108,10 +110,10 @@ def test_sleep_from_the_watch_minutes(tmp_path):
     for n in range(8 * 60):
         t = bed + timedelta(minutes=n)
         # Awake 02:00–02:20, and a 10-minute nap in the afternoon before.
-        kind = 80 if 180 <= n < 200 else store.KIND_SLEEP
+        kind = 80 if 180 <= n < 200 else KIND_SLEEP
         minutes.append((t, 0, 55, kind))
     nap = datetime.combine(night - timedelta(days=1), time(15, 0))
-    minutes += [(nap + timedelta(minutes=n), 0, 60, store.KIND_SLEEP) for n in range(10)]
+    minutes += [(nap + timedelta(minutes=n), 0, 60, KIND_SLEEP) for n in range(10)]
     s = store.Store(make_db(tmp_path / "s.kexi", minutes))
     sleep = s.sleeps(night, night)[night]
     assert sleep.start == bed

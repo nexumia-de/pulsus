@@ -1,89 +1,12 @@
-"""Amazfish's database, read-only: find it, take a private snapshot, and
-answer the questions the pages ask. No GTK.
-
-Amazfish (github.com/piggz/harbour-amazfish) writes one SQLite file
-through KDb. Pulsus never opens that file for writing: it copies it with
-SQLite's backup API (a consistent snapshot even while Amazfish writes)
-into its own cache and reads only the copy. Table and column facts:
-docs/amazfish-data.md.
-"""
-import logging
-import os
+"""Questions about one snapshot of Amazfish's database: minutes, daily
+values, readings, nights and workouts (docs/amazfish-data.md). No GTK."""
 import sqlite3
-from dataclasses import dataclass, field
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
-log = logging.getLogger("pulsus.store")
-
-# Where Amazfish keeps its database: QStandardPaths::AppDataLocation with
-# organisation and application "harbour-amazfish", file "amazfish.kexi".
-_RELATIVE = Path("harbour-amazfish") / "harbour-amazfish" / "amazfish.kexi"
-LOCATIONS = (
-    # Installed as a system package (postmarketOS, Alpine, distributions).
-    Path(".local/share") / _RELATIVE,
-    # Installed from Flathub (uk.co.piggz.amazfish).
-    Path(".var/app/uk.co.piggz.amazfish/data") / _RELATIVE,
-)
-
-# Heart rate: 255 means "not measured" (Amazfish's own charts filter
-# heartrate < 255); 0 is no reading either.
-HR_MIN, HR_MAX = 1, 254
-# raw_kind of Zepp OS watches (Amazfit Balance), as Gadgetbridge reads
-# them (HuamiExtendedSampleProvider): asleep, not worn, charging.
-KIND_SLEEP = 120
-KIND_NOT_WORN = 115
-KIND_CHARGING = 118
-# One night runs from noon to noon and belongs to the morning's date.
-NIGHT_START = time(12, 0)
-# Sleep minutes closer than this belong to the same sleep.
-SLEEP_GAP = timedelta(minutes=60)
-# Shorter sleeps (naps in the evening) are not the night's sleep.
-SLEEP_MIN = timedelta(minutes=20)
-# Resting heart rate (estimate): average of the day's lowest readings.
-RESTING_READINGS = 30
-
-
-def find_database(home=None, environ=None):
-    """The Amazfish database, or None. PULSUS_DATABASE overrides the
-    search. Inside the Flatpak the home directory is the real one, so
-    the same paths work there (docs/amazfish-data.md#flatpak)."""
-    environ = os.environ if environ is None else environ
-    if environ.get("PULSUS_DATABASE"):
-        path = Path(environ["PULSUS_DATABASE"]).expanduser()
-        return path if path.is_file() else None
-    home = Path(home or Path.home())
-    for relative in LOCATIONS:
-        path = home / relative
-        if path.is_file():
-            return path
-    return None
-
-
-def searched_paths(home=None):
-    home = Path(home or Path.home())
-    return [home / relative for relative in LOCATIONS]
-
-
-def snapshot(source, target):
-    """Copy the database `source` to `target` without writing to the
-    source: SQLite's backup API on a read-only connection, so the copy is
-    consistent even while Amazfish writes. Returns `target`."""
-    target = Path(target)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    tmp = target.with_suffix(".tmp")
-    tmp.unlink(missing_ok=True)
-    src = sqlite3.connect(f"{Path(source).resolve().as_uri()}?mode=ro", uri=True)
-    try:
-        dst = sqlite3.connect(tmp)
-        try:
-            src.backup(dst)
-        finally:
-            dst.close()
-    finally:
-        src.close()
-    tmp.replace(target)
-    return target
+from pulsus.data import sleep as sleep_
+from pulsus.data.records import Minute, Workout
+from pulsus.data.values import HR_MAX, HR_MIN, KIND_SLEEP, RESTING_READINGS
 
 
 def day_start(day):
@@ -94,56 +17,6 @@ def day_start(day):
 def days(first, last):
     """Every date from `first` to `last`, both included."""
     return [first + timedelta(days=n) for n in range((last - first).days + 1)]
-
-
-@dataclass
-class Minute:
-    ts: int
-    steps: int
-    heart_rate: int | None
-    kind: int
-
-
-@dataclass
-class Sleep:
-    """One night's main sleep: from the first to the last asleep minute,
-    with the asleep stretches in between. The Balance's stored data has
-    no sleep stages (docs/amazfish-data.md#sleep)."""
-    night: date
-    start: datetime
-    end: datetime
-    asleep: timedelta
-    segments: list = field(default_factory=list)  # (start, end) datetimes
-
-    @property
-    def in_bed(self):
-        return self.end - self.start
-
-    @property
-    def awake(self):
-        return self.in_bed - self.asleep
-
-
-@dataclass
-class Workout:
-    id: int
-    kind: int
-    name: str
-    start: datetime
-    end: datetime
-    has_track: bool
-    meta: dict = field(default_factory=dict)   # key -> (value, unit)
-
-    @property
-    def duration(self):
-        seconds = self.number("workoutDuration") or self.number("activeSeconds")
-        return timedelta(seconds=seconds) if seconds else self.end - self.start
-
-    def number(self, key):
-        try:
-            return float(self.meta[key][0])
-        except (KeyError, TypeError, ValueError):
-            return None
 
 
 class Store:
@@ -334,35 +207,12 @@ class Store:
     def _sleep(self, night):
         if not self.has("mi_band_activity"):
             return None
-        start = datetime.combine(night - timedelta(days=1), NIGHT_START)
+        start, end = sleep_.window(night)
         rows = self._rows(
             "SELECT timestamp FROM mi_band_activity WHERE timestamp >= ? "
             "AND timestamp < ? AND raw_kind = ? ORDER BY timestamp",
-            int(start.timestamp()), int((start + timedelta(days=1)).timestamp()),
-            KIND_SLEEP)
-        # Runs of asleep minutes, then runs joined across short wake-ups.
-        minute = timedelta(minutes=1)
-        segments = []
-        for (ts,) in rows:
-            t = datetime.fromtimestamp(ts)
-            if segments and t - segments[-1][1] <= minute:
-                segments[-1][1] = t + minute
-            else:
-                segments.append([t, t + minute])
-        sleeps = []
-        for seg in segments:
-            if sleeps and seg[0] - sleeps[-1][-1][1] <= SLEEP_GAP:
-                sleeps[-1].append(seg)
-            else:
-                sleeps.append([seg])
-        if not sleeps:
-            return None
-        main = max(sleeps, key=lambda s: sum((b - a for a, b in s), timedelta()))
-        asleep = sum((b - a for a, b in main), timedelta())
-        if asleep < SLEEP_MIN:
-            return None
-        return Sleep(night, main[0][0], main[-1][1], asleep,
-                     [(a, b) for a, b in main])
+            int(start.timestamp()), int(end.timestamp()), KIND_SLEEP)
+        return sleep_.main_sleep(night, [datetime.fromtimestamp(ts) for (ts,) in rows])
 
     # --- workouts ------------------------------------------------------
 

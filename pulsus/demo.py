@@ -11,7 +11,7 @@ import sqlite3
 from datetime import datetime, time, timedelta
 from pathlib import Path
 
-from pulsus.store import KIND_CHARGING, KIND_SLEEP
+from pulsus.data.values import KIND_CHARGING, KIND_SLEEP
 
 DAYS = 120
 # Ordinary daytime raw_kind values; Pulsus only reads 115, 118 and 120.

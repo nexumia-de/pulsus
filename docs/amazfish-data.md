@@ -3,7 +3,7 @@ type: Reference
 title: Amazfish's data as Pulsus reads it
 description: Where Amazfish keeps its SQLite database, which tables and columns Pulsus reads and what their values mean for the Amazfit Balance, how Pulsus reads without writing, and what the stored data lacks.
 tags: [amazfish, database, sqlite, zepp-os, amazfit-balance, sleep, heart-rate]
-resource: ../pulsus/store.py
+resource: ../pulsus/data/
 generated: { by: claude-code/2.1.318, at: 2026-11-04T19:30:00Z }
 sources:
   - id: af-schema
@@ -57,7 +57,7 @@ application name are both `harbour-amazfish`[^af-app]. So:
 | System package (postmarketOS, Alpine, distributions) | `~/.local/share/harbour-amazfish/harbour-amazfish/amazfish.kexi` |
 | Flathub, `uk.co.piggz.amazfish`[^fh] | `~/.var/app/uk.co.piggz.amazfish/data/harbour-amazfish/harbour-amazfish/amazfish.kexi` |
 
-Pulsus tries them in this order (`store.find_database`);
+Pulsus tries them in this order (`data.find_database`);
 `PULSUS_DATABASE=<file>` overrides the search.
 
 ## Flatpak
@@ -73,11 +73,11 @@ work. Pulsus has no network and no D-Bus names.
 Pulsus never opens Amazfish's file for writing. It copies it with
 SQLite's backup API from a `mode=ro` connection into
 `~/.cache/pulsus/amazfish-snapshot.sqlite` and reads only the copy
-(`store.snapshot`): the copy is consistent even while Amazfish writes,
-uncommitted rows are left out (tests in `tests/test_store.py`). A file
+(`data.snapshot`): the copy is consistent even while Amazfish writes,
+uncommitted rows are left out (tests in `tests/test_data.py`). A file
 monitor on the folder takes a new snapshot 3 s after Amazfish stopped
 writing, and again when the window comes back to the front
-(`source.py`). Older Amazfish versions lack some tables; every query
+(`data/source.py`). Older Amazfish versions lack some tables; every query
 checks first.
 
 # What the Balance delivers
@@ -112,7 +112,7 @@ Not read yet: `spo2sleep`, `info_log` (battery), the GPX track.
 `heartrate < 255`[^af-ui]); Pulsus also drops 0. Missing minutes stay
 gaps in the charts. Amazfish stores no resting heart rate, so Pulsus
 **estimates** it: the average of the day's 30 lowest one-minute readings
-(`store.RESTING_READINGS`). These are mostly sleeping minutes, so the
+(`data/values.py`). These are mostly sleeping minutes, so the
 estimate runs a few beats below the watch's own resting value; it is
 labelled as an estimate.
 
@@ -127,7 +127,7 @@ stages are dropped by Amazfish (`m_sampleSize == 8`)[^af-fetch].
 Amazfish's own sleep chart counts minutes whose low four bits are 9
 (light) or 11 (deep)[^af-ui]: `120 & 0xf` is 8, so **Amazfish probably
 shows no sleep for the Balance**. Pulsus reads 120 as asleep and builds
-the night's main sleep (`store.Store._sleep`): the night runs from
+the night's main sleep (`data/sleep.py`): the night runs from
 noon to noon and belongs to the morning's date; asleep minutes closer
 than 60 min form one sleep; the sleep with the most asleep time is the
 night's, if it has at least 20 min. Pulsus shows asleep and awake only.

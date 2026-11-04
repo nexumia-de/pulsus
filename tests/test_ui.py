@@ -16,7 +16,8 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, GLib  # noqa: E402
 
-from pulsus import settings, source, store  # noqa: E402
+from pulsus import data, settings  # noqa: E402
+from pulsus.data import location, source  # noqa: E402
 from pulsus.metrics import METRICS  # noqa: E402
 
 
@@ -51,7 +52,7 @@ def new_window(app, path):
 
 
 def test_today_metrics_and_workouts(app, demo_db, tmp_path):
-    from pulsus.detail import RANGES, MetricPage
+    from pulsus.metric import RANGES, MetricPage
     from pulsus.preferences import PreferencesDialog
     from pulsus.today import TodayPage
     from pulsus.workouts import WorkoutPage, WorkoutsPage
@@ -132,7 +133,7 @@ def test_new_snapshot_refreshes_the_pages(app, tmp_path):
 
 
 def test_without_a_database(app, monkeypatch, tmp_path):
-    monkeypatch.setattr(store.Path, "home", lambda: tmp_path)
+    monkeypatch.setattr(location.Path, "home", lambda: tmp_path)
     from pulsus.window import Window
     window = Window(app, source.Source(None, watch=False), settings.Store())
     window.present()
@@ -140,7 +141,7 @@ def test_without_a_database(app, monkeypatch, tmp_path):
     assert visible(window).get_tag() == "missing"
     # Amazfish synced meanwhile: Look Again finds it.
     from pulsus import demo
-    demo.create(tmp_path / store.LOCATIONS[0], days=3)
+    demo.create(tmp_path / data.LOCATIONS[0], days=3)
     window._on_look_again()
     iterate()
     assert visible(window).get_tag() == "today"

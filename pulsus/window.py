@@ -5,7 +5,7 @@ from datetime import date
 
 from gi.repository import Adw, Gio, GLib, Gtk
 
-from pulsus import NAME, store
+from pulsus import NAME, data
 from pulsus.metrics import BY_ID
 
 log = logging.getLogger("pulsus.window")
@@ -55,7 +55,7 @@ class Window(Adw.ApplicationWindow):
         header.pack_end(menu)
         toolbar.add_top_bar(header)
         paths = "\n".join(GLib.markup_escape_text(str(p))
-                          for p in store.searched_paths())
+                          for p in data.searched_paths())
         status = Adw.StatusPage(
             icon_name="pulsus-heart-symbolic", title="No Amazfish Data Found",
             description="Pulsus shows the data that Amazfish downloads from your "
@@ -75,11 +75,11 @@ class Window(Adw.ApplicationWindow):
         return page
 
     def _on_look_again(self, *_):
-        path = store.find_database()
+        path = data.find_database()
         if path is None:
             self.toast("Still no Amazfish database")
             return
-        from pulsus.source import Source
+        from pulsus.data.source import Source
         self.source = Source(path)
         self.source.connect("changed", self._on_changed)
         self._show_root()
@@ -109,7 +109,7 @@ class Window(Adw.ApplicationWindow):
     def show_metric(self, metric_id, day=None, range_id="week"):
         if not self.source.found or metric_id not in BY_ID:
             return
-        from pulsus.detail import MetricPage
+        from pulsus.metric import MetricPage
         self.nav.pop_to_page(self.today)
         self.nav.push(MetricPage(self, BY_ID[metric_id], day or self._day(), range_id))
 

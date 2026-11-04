@@ -16,7 +16,9 @@ well.
   Amazfish's database, has no Bluetooth, no network and no sync of its
   own, and keeps no health data outside its snapshot cache. Read
   [docs/amazfish-data.md](docs/amazfish-data.md) before touching
-  `store.py` or `source.py`.
+  `pulsus/data/`.
+- Visible name: still "Pulsus" until the owner chooses one that says what
+  the app does (toolkit decision on app names; issue in M1).
 - Facts about Amazfish's tables come from its source at a recorded
   commit, facts about Zepp OS values from Gadgetbridge's source; never
   copy code from either (GPL-3.0, AGPL-3.0).

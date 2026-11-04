@@ -6,7 +6,9 @@ import logging
 
 from gi.repository import Gio, GLib, GObject
 
-from pulsus import settings, store
+from pulsus import settings
+from pulsus.data.location import find_database, snapshot
+from pulsus.data.store import Store
 
 log = logging.getLogger("pulsus.source")
 
@@ -16,14 +18,14 @@ SETTLE_MS = 3000
 
 
 class Source(GObject.Object):
-    """`store` is a pulsus.store.Store on the newest snapshot, or None if
+    """`store` is a pulsus.data.Store on the newest snapshot, or None if
     no database was found. "changed" is emitted after a new snapshot."""
 
     __gsignals__ = {"changed": (GObject.SignalFlags.RUN_FIRST, None, ())}
 
     def __init__(self, path=None, watch=True):
         super().__init__()
-        self.path = path or store.find_database()
+        self.path = path or find_database()
         self.store = None
         self.error = None
         self._monitors = []
@@ -56,8 +58,8 @@ class Source(GObject.Object):
         if stamp == self._stamp and self.store is not None:
             return False
         try:
-            target = store.snapshot(self.path, settings.cache_dir() / "amazfish-snapshot.sqlite")
-            new = store.Store(target)
+            target = snapshot(self.path, settings.cache_dir() / "amazfish-snapshot.sqlite")
+            new = Store(target)
         except Exception as e:   # sqlite3.Error, OSError: keep the old one
             log.warning("can't read %s: %s", self.path, e)
             self.error = str(e)

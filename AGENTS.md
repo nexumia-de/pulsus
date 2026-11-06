@@ -17,8 +17,9 @@ well.
   own, and keeps no health data outside its snapshot cache. Read
   [docs/amazfish-data.md](docs/amazfish-data.md) before touching
   `pulsus/data/`.
-- Visible name: still "Pulsus" until the owner chooses one that says what
-  the app does (toolkit decision on app names; issue in M1).
+- Visible name: **Watch Health** (chosen by the owner on 2026-11-06,
+  [decision](docs/decisions/app-name.md)); the code name Pulsus stays for
+  the repository, app id, package and docs.
 - Facts about Amazfish's tables come from its source at a recorded
   commit, facts about Zepp OS values from Gadgetbridge's source; never
   copy code from either (GPL-3.0, AGPL-3.0).

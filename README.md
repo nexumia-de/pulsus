@@ -1,6 +1,8 @@
-# Pulsus
+# Watch Health (Pulsus)
 
-Latin for *pulse*.
+*Watch Health* is the name you see in the app grid; the code name
+*Pulsus*, Latin for *pulse*, is used for the repository, app id and
+package.
 
 Adaptive GTK4/libadwaita app for [Phosh](https://phosh.mobi/) phones and
 the desktop that shows the health data

@@ -6,7 +6,7 @@ from statistics import fmean
 
 from gi.repository import Adw, Gtk
 
-from pulsus import stats, text
+from pulsus import NAME, stats, text
 from pulsus.card import Card
 from pulsus.charts import Series
 from pulsus.metrics import METRICS
@@ -24,7 +24,7 @@ def spark_series(daily, day, style):
 
 class TodayPage(Adw.NavigationPage):
     def __init__(self, window):
-        super().__init__(title="Pulsus", tag="today")
+        super().__init__(title=NAME, tag="today")
         self.window = window
         self.day = date.today()
         toolbar = Adw.ToolbarView()
@@ -114,7 +114,7 @@ class TodayPage(Adw.NavigationPage):
             self.status.set_label("Amazfish has not stored any data yet.")
         else:
             self.status.set_label(f"Newest data from Amazfish: {text.ago(last, now)}. "
-                                  "Pulsus only shows what Amazfish has downloaded "
+                                  "Watch Health only shows what Amazfish has downloaded "
                                   "from the watch.")
         stale = last is None or now - last > STALE
         self.banner.set_title(

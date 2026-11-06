@@ -3,11 +3,11 @@
   <id>de.nexumia.Pulsus</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>AGPL-3.0-or-later</project_license>
-  <name>Pulsus</name>
+  <name>Watch Health</name>
   <summary>See the health data of your watch</summary>
   <description>
     <p>
-      Pulsus shows the data that Amazfish downloads from your smartwatch,
+      Watch Health shows the data that Amazfish downloads from your smartwatch,
       on a Phosh phone and on the desktop. It reads Amazfish's database
       and never changes it; it needs no account and no network.
     </p>
@@ -19,7 +19,7 @@
       <li>Follows every sync of Amazfish by itself</li>
     </ul>
     <p>
-      Pulsus is an independent project and not affiliated with the
+      Watch Health is an independent project and not affiliated with the
       Amazfish project or the watch maker. It is not a medical device.
     </p>
   </description>

@@ -29,7 +29,7 @@ class PreferencesDialog(Adw.PreferencesDialog):
 
         data = Adw.PreferencesGroup(
             title="Data",
-            description="Pulsus reads Amazfish's database and never changes it. "
+            description="Watch Health reads Amazfish's database and never changes it. "
                         "It keeps no health data of its own.")
         path = window.source.path
         row = Adw.ActionRow(title="Amazfish Database",

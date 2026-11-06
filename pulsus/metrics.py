@@ -61,7 +61,7 @@ METRICS = (
            "mi_band_activity", "daily_sleep", "bars", "sleep",
            "Time asleep in the night's main sleep, from the minutes the watch "
            "marked as asleep. Amazfish does not store sleep stages for this "
-           "watch, so Pulsus shows asleep and awake only.", digits=1),
+           "watch, so Watch Health shows asleep and awake only.", digits=1),
     Metric("stress", "Stress", "pulsus-stress-symbolic", "",
            "stress", "daily_stress", "dots", "stress",
            "Average of the watch's automatic stress readings (0–100).",

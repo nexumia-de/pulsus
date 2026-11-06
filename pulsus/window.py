@@ -33,7 +33,7 @@ class Window(Adw.ApplicationWindow):
         menu = Gio.Menu()
         menu.append("Workouts", "app.show-workouts")
         menu.append("Preferences", "app.preferences")
-        menu.append("About Pulsus", "app.about")
+        menu.append(f"About {NAME}", "app.about")
         return menu
 
     def _show_root(self):
@@ -58,9 +58,9 @@ class Window(Adw.ApplicationWindow):
                           for p in data.searched_paths())
         status = Adw.StatusPage(
             icon_name="pulsus-heart-symbolic", title="No Amazfish Data Found",
-            description="Pulsus shows the data that Amazfish downloads from your "
+            description="Watch Health shows the data that Amazfish downloads from your "
                         "watch. Pair your watch in Amazfish and let it sync once.\n\n"
-                        f"<small>Pulsus looked for:\n{paths}</small>")
+                        f"<small>Watch Health looked for:\n{paths}</small>")
         if self.source.error:
             status.set_description(status.get_description() + "\n\n<small>"
                                    + GLib.markup_escape_text(self.source.error)

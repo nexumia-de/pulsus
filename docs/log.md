@@ -1,5 +1,8 @@
 # Directory Update Log
 
+## 2026-11-08
+* **Update**: `AGENTS.md` imports `agents/core.md` and `agents/gtk-app.md` from phosh-toolkit instead of its whole `AGENTS.md`; repeated shared rules removed (toolkit decision "lean agent rules", to use fewer tokens per session).
+
 ## 2026-11-06
 * **Update**: [App name](decisions/app-name.md): the owner chose the visible name **Watch Health** (#2). `.desktop` `Name` (plus the keyword `pulsus`), metainfo `<name>`, window title, About dialog and the texts that name the app say Watch Health, the nightly "Watch Health (Nightly)"; repository, app id, package and docs keep the code name Pulsus.
 

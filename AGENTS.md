@@ -1,16 +1,14 @@
-@../phosh-toolkit/AGENTS.md
+@../phosh-toolkit/agents/core.md
+@../phosh-toolkit/agents/gtk-app.md
 
 # Pulsus
 
 Shows the health data that [Amazfish](https://github.com/piggz/harbour-amazfish)
 downloads from the owner's watch (an Amazfit Balance), on Phosh phones
-and the desktop. The shared rules in ../phosh-toolkit/AGENTS.md apply as
-well.
+and the desktop.
 
 - App id: `de.nexumia.Pulsus`.
-- Plan: work items are [issues](https://github.com/nexumia-de/pulsus/issues)
-  in [milestones](https://github.com/nexumia-de/pulsus/milestones); goals
-  per milestone are in [docs/roadmap.md](docs/roadmap.md).
+- Plan: [milestones](https://github.com/nexumia-de/pulsus/milestones); goals in [docs/roadmap.md](docs/roadmap.md).
 - **Display only** ([decision](docs/decisions/display-only.md)): Amazfish
   is the only program that talks to the watch. Pulsus never writes to
   Amazfish's database, has no Bluetooth, no network and no sync of its

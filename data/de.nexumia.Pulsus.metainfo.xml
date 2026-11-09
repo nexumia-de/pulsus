@@ -47,7 +47,56 @@
     <control>keyboard</control>
     <control>touch</control>
   </supports>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Today at a glance</caption>
+      <image>https://github.com/nexumia-de/pulsus/releases/download/v0.1.1/today-phone-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Today at a glance</caption>
+      <image>https://github.com/nexumia-de/pulsus/releases/download/v0.1.1/today-desktop-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Steps of the last 30 days against your goal</caption>
+      <image>https://github.com/nexumia-de/pulsus/releases/download/v0.1.1/steps-month-phone-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Steps of the last 30 days against your goal</caption>
+      <image>https://github.com/nexumia-de/pulsus/releases/download/v0.1.1/steps-month-desktop-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Resting heart rate in your own normal range</caption>
+      <image>https://github.com/nexumia-de/pulsus/releases/download/v0.1.1/heart-rate-phone-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Resting heart rate in your own normal range</caption>
+      <image>https://github.com/nexumia-de/pulsus/releases/download/v0.1.1/heart-rate-desktop-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Last night's sleep</caption>
+      <image>https://github.com/nexumia-de/pulsus/releases/download/v0.1.1/sleep-phone-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Last night's sleep</caption>
+      <image>https://github.com/nexumia-de/pulsus/releases/download/v0.1.1/sleep-desktop-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>A workout with the heart rate during it</caption>
+      <image>https://github.com/nexumia-de/pulsus/releases/download/v0.1.1/workout-phone-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>A workout with the heart rate during it</caption>
+      <image>https://github.com/nexumia-de/pulsus/releases/download/v0.1.1/workout-desktop-light.png</image>
+    </screenshot>
+  </screenshots>
   <releases>
+    <release version="0.1.1" date="2026-11-09">
+      <description>
+        <ul>
+          <li>The app is now called Watch Health.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.0" date="2026-11-04">
       <description>
         <p>First version: today's values, every metric by day, week, month and year, and workouts, read from Amazfish.</p>

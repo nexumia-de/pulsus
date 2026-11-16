@@ -5,7 +5,7 @@ try:
 except ImportError:  # run from the source tree, config.py is not built
     APP_ID = "de.nexumia.Pulsus"
     BUILD_LABEL = ""
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 # The nightly app is built from every push to main.
 NIGHTLY = APP_ID.endswith(".Devel")
 NAME = "Watch Health (Nightly)" if NIGHTLY else "Watch Health"

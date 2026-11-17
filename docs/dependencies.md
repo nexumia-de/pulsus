@@ -17,7 +17,7 @@ installs no licence files.
 
 | Module | Version | Licence | Licence files |
 |---|---|---|---|
-| `phosh-toolkit` | tag `v0.3.0` (commit `c29a2a1`) | GPL-3.0-or-later (own code, same author) | `LICENSE` → `/app/share/licenses/<app id>/phosh-toolkit/` |
+| `phosh-toolkit` | tag `v0.4.0` (commit `89e3505`) | GPL-3.0-or-later (own code, same author) | `LICENSE` → `/app/share/licenses/<app id>/phosh-toolkit/` |
 
 Only `lib/phosh_toolkit/` is installed; Pulsus uses `settings`
 (`JsonStore`, `app_dir`) and `style` (light/dark)

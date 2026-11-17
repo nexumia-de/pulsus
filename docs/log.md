@@ -1,5 +1,8 @@
 # Directory Update Log
 
+## 2026-11-16
+* **Update**: phosh-toolkit pin raised from `v0.3.0` to `v0.4.0` (manifest, [dependencies](dependencies.md)). The `settings` and `style` modules, the only ones Pulsus uses, are unchanged between the tags; internal change, no changelog fragment.
+
 ## 2026-11-08
 * **Update**: `AGENTS.md` imports `agents/core.md` and `agents/gtk-app.md` from phosh-toolkit instead of its whole `AGENTS.md`; repeated shared rules removed (toolkit decision "lean agent rules", to use fewer tokens per session).
 

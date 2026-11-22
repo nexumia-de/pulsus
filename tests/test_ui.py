@@ -106,6 +106,12 @@ def test_today_metrics_and_workouts(app, demo_db, tmp_path):
     assert isinstance(visible(window), WorkoutPage)
     window.nav.pop_to_page(today)
 
+    # About: the troubleshooting page says what the database holds.
+    app.activate_action("about")
+    iterate()
+    assert "mi_band_activity:" in app.about.get_debug_info()
+    app.about.close()
+
     # The step goal changes the card at once and is kept.
     dialog = PreferencesDialog(window)
     dialog.goal_row.set_selected(settings.STEP_GOALS.index(12000))

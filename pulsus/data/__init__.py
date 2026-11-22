@@ -5,6 +5,7 @@
 - records.py: a minute, a night's sleep, a workout
 - sleep.py: the night's main sleep from the asleep minutes
 - store.py: questions about one snapshot
+- report.py: what the database holds, as text for troubleshooting
 - source.py: the newest snapshot, following every sync of Amazfish
 """
 from pulsus.data.location import LOCATIONS, find_database, searched_paths, snapshot

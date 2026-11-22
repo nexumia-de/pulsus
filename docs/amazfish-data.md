@@ -43,8 +43,8 @@ sources:
 Read from Amazfish's source at commit `730b542` (2026-11-04) and, for
 the meaning of Zepp OS values, Gadgetbridge at `351b038` (2026-11-04),
 both cloned with git. Facts only: Pulsus contains no code of either
-(GPL-3.0, AGPL-3.0). **Not yet checked against the owner's database**
-(issue in M1).
+(GPL-3.0, AGPL-3.0). **Not yet checked against the owner's database**:
+the checklist is in [owner checks](owner-checks.md#real-data-on-the-phone-1).
 
 # Where the database is
 
@@ -79,6 +79,16 @@ monitor on the folder takes a new snapshot 3 s after Amazfish stopped
 writing, and again when the window comes back to the front
 (`data/source.py`). Older Amazfish versions lack some tables; every query
 checks first.
+
+## Checking on the phone
+
+About ▸ Troubleshooting shows a text made by `data/report.py`: the
+database path, the rows of every table Pulsus reads with first and last
+day, the twelve most frequent `raw_kind` values with their minutes, how
+many heart-rate minutes are valid, 255 or 0, and the number of workouts.
+Counts and dates only, no readings; it is made on demand and stored
+nowhere. It answers "did Amazfish download this at all" without a shell
+on the phone.
 
 # What the Balance delivers
 

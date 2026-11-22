@@ -29,6 +29,7 @@ workouts ([visualisation](visualisation.md)).
 it finds the owner's Amazfish database; the meaning of `raw_kind`, heart
 rate 0/255 and timestamps checked against the owner's data and the
 watch's own display; pages open fast with the owner's full history.
+What is left needs the phone: [owner checks](owner-checks.md).
 
 # M2 – Deeper insight
 

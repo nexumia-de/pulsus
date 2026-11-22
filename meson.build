@@ -34,6 +34,7 @@ python.install_sources(
   'pulsus/data/__init__.py',
   'pulsus/data/location.py',
   'pulsus/data/records.py',
+  'pulsus/data/report.py',
   'pulsus/data/sleep.py',
   'pulsus/data/source.py',
   'pulsus/data/store.py',

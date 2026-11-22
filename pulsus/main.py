@@ -126,6 +126,15 @@ class Application(Adw.Application):
                      "maker. Not a medical device.",
         )
         dialog.add_link("Support Development", SUPPORT_URL)
+        window = self._window()
+        if window is not None:
+            # Troubleshooting: what Amazfish's database holds, counts only.
+            from pulsus import data
+            from pulsus.data.report import report
+            dialog.set_debug_info(report(window.source.path, window.source.store,
+                                         data.searched_paths()))
+            dialog.set_debug_info_filename("watch-health-data.txt")
+        self.about = dialog
         dialog.present(self._window())
 
 

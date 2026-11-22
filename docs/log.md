@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: [Release channels](release-channels.md): the first release is out (`v0.1.0`; the shared Flatpak repository's page lists the stable and the nightly app), so #3 is done except for the ruleset import and the install on the phone, which are in [owner checks](owner-checks.md#first-release-3).
 * **Creation**: decision [gaps in Amazfish's downloads go upstream](decisions/amazfish-gaps.md) (#4): missing sleep stages and resting heart rate are reported to Amazfish by the owner; no own fork (Amazfish's AI policy, no device to test a Bluetooth change, a fork to maintain). Steps in [owner checks](owner-checks.md#report-to-amazfish-4).
 * **Update**: [Amazfish's data](amazfish-data.md#workouts): Amazfish (at `730b542`) fetches workouts only from its Sports page, one per "Download Next Activity"; the hourly sync never does. That explains an empty `sports_data` with real data (#8). The empty Workouts page now says so; the check on the phone is in [owner checks](owner-checks.md#workouts-from-amazfish-8).
 * **Creation**: [Owner checks](owner-checks.md), the device and account work left after the open issues were closed; first list: the comparison with the owner's real data (#1). To make it possible without a shell on the phone, About ▸ Troubleshooting now shows what Amazfish's database holds (`pulsus/data/report.py`, counts and dates only; [Amazfish's data](amazfish-data.md#checking-on-the-phone)). `tests/test_speed.py` keeps Today and the Year views under two seconds on a year of demo data.

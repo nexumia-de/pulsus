@@ -67,3 +67,17 @@ accept AI-written reports or replies).
       sleep chart counts kinds 9 and 11 while the Balance stores 120.
 - [ ] If the Sports download stores nothing for the Balance (#8 above),
       add that or report it separately.
+
+# First release (#3)
+
+Published: <https://flatpak.nexumia.de/> lists Watch Health and Watch
+Health (Nightly) (seen 2026-11-22).
+
+- [ ] Import `.github/rulesets/main.json` as the ruleset for `main`
+      (Settings ▸ Rules ▸ Rulesets ▸ Import), if not done yet; an agent
+      cannot see or change the repository's rulesets.
+- [ ] Install Watch Health on the phone from <https://flatpak.nexumia.de/>
+      and start it once; then go on with the list for #1 above.
+- [ ] Merge the next release pull request (`release/v…`) and push its
+      tag when the changes of this file's pull request should reach the
+      stable app.

@@ -68,6 +68,24 @@ accept AI-written reports or replies).
 - [ ] If the Sports download stores nothing for the Balance (#8 above),
       add that or report it separately.
 
+# Workout route and zones (#5)
+
+Tested only with recorded GPX files and the demo person; the format of
+the Balance's own tracks was not seen.
+
+- [ ] After a GPS workout is downloaded (#8 above), its page shows the
+      route; its shape matches the watch's or the Zepp app's map.
+- [ ] Distance and the time per kilometre are close to the watch's.
+- [ ] The maximum heart rate under Preferences is plausible (or set
+      your own); the minutes per zone roughly match the watch.
+- [ ] A workout without GPS shows no route card and no error.
+
+# Summary (#6)
+
+- [ ] Summary ▸ last 7 days, the step-goal streak and the records match
+      what the watch and Amazfish show for the same days.
+- [ ] Summary opens quickly with the full history.
+
 # First release (#3)
 
 Published: <https://flatpak.nexumia.de/> lists Watch Health and Watch

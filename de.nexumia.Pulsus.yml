@@ -12,14 +12,18 @@ finish-args:
   # installed as a system package, and from Flathub.
   - --filesystem=~/.local/share/harbour-amazfish:ro
   - --filesystem=~/.var/app/uk.co.piggz.amazfish/data/harbour-amazfish:ro
-  # No network, no D-Bus names: Pulsus only reads and shows.
+  # Only for "Report a Problem…" (docs/dependencies.md#permissions): the
+  # issue goes to GitHub with the user's own token, which lives in the
+  # keyring (libsecret through the Secret portal). No health data is sent.
+  - --share=network
+  - --talk-name=org.freedesktop.secrets
 cleanup:
   - /include
   - /lib/pkgconfig
   - '*.a'
   - '*.la'
 # Everything else Pulsus needs is in the GNOME runtime (GTK, libadwaita,
-# Python with sqlite3). Inventory: docs/dependencies.md.
+# libsoup, libsecret, Python with sqlite3). Inventory: docs/dependencies.md.
 modules:
   # Shared settings and style code (phosh-toolkit
   # docs/shared-connection.md), next to Pulsus's package in site-packages.
@@ -31,8 +35,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/nexumia-de/phosh-toolkit.git
-        tag: v0.4.0
-        commit: 89e3505aa290c4303e707229e09b33c3d4357fee
+        tag: v0.8.0
+        commit: 3ec15b8fb1ec01e9db75bb0952b89b101ea42d69
         x-checker-data:
           type: git
           tag-pattern: ^v([\d.]+)$

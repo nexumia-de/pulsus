@@ -1,5 +1,5 @@
 """The route of a workout: the GPS track drawn to scale, north up, with
-start and end and a scale bar. No map tiles: Pulsus has no network
+start and end and a scale bar. No map tiles: Pulsus loads no map data
 (docs/decisions/route-without-map.md)."""
 import math
 

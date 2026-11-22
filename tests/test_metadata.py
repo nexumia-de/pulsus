@@ -36,13 +36,17 @@ def test_phone_metadata():
     assert root.find("url[@type='donation']").text == pulsus.SUPPORT_URL
 
 
-def test_manifest_reads_amazfish_read_only_and_has_no_network():
+def test_manifest_reads_amazfish_read_only_and_network_is_for_reports():
     manifest = (ROOT / f"{APP_ID}.yml").read_text()
     args = [line.strip()[2:] for line in manifest.splitlines()
             if line.strip().startswith("- --")]
     reads = [a for a in args if a.startswith("--filesystem=")]
     assert reads and all(a.endswith(":ro") for a in reads)
-    assert "--share=network" not in args
+    # The network and the keyring are for "Report a Problem…" only
+    # (docs/dependencies.md#permissions); nothing else is opened.
+    assert "--share=network" in args
+    assert "--talk-name=org.freedesktop.secrets" in args
+    assert not [a for a in args if a.startswith("--filesystem=") and ":ro" not in a]
     commit = re.search(r"- name: phosh-toolkit.*?commit: (\w+)", manifest, re.S)
     assert commit and len(commit.group(1)) == 40
 

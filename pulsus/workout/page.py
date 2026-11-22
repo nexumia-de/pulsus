@@ -59,8 +59,8 @@ class WorkoutPage(Adw.NavigationPage):
             self.route = Route(points)
             card.append(self.route)
             card.append(Gtk.Label(
-                label="The GPS track to scale, north up. Watch Health has no "
-                      "network, so there is no map behind it.",
+                label="The GPS track to scale, north up. Watch Health loads "
+                      "no map data, so there is no map behind it.",
                 xalign=0, wrap=True, css_classes=["caption", "dimmed"]))
             box.append(card)
 

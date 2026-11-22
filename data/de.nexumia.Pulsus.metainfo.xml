@@ -9,7 +9,8 @@
     <p>
       Watch Health shows the data that Amazfish downloads from your smartwatch,
       on a Phosh phone and on the desktop. It reads Amazfish's database
-      and never changes it; it needs no account and no network.
+      and never changes it; it needs no account and never sends your health data anywhere. The
+      network is used only if you choose to send a problem report.
     </p>
     <ul>
       <li>Today at a glance: steps, resting heart rate, sleep, stress, heart rate variability, blood oxygen, skin temperature and PAI</li>

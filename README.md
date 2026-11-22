@@ -19,7 +19,9 @@ variability, blood oxygen, skin temperature, PAI and workouts.
 - **Honest charts**: gaps stay gaps, estimates are labelled, the
   numbers are written out.
 - **Only reads**: Pulsus opens Amazfish's database read-only and
-  follows every sync. No account, no network, no Bluetooth of its own.
+  follows every sync. No account, no Bluetooth of its own, and your health data never
+  leaves the phone; the network is used only to send a problem report
+  you write yourself.
 
 Built for the Amazfit Balance; other watches that Amazfish supports
 should work, but their sleep data is untested. Status: first version

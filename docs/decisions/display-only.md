@@ -26,8 +26,11 @@ Amazfish's own charts are basic. Options looked at:
 # Decision
 
 - Amazfish stays the only program that talks to the watch. Pulsus has
-  no Bluetooth, no network, no D-Bus calls to Amazfish and no sync
-  button.
+  no Bluetooth, no network use for data, no D-Bus calls to Amazfish and
+  no sync button. One exception, added 2026-11-22 with toolkit `v0.8.0`:
+  **Report a Problem…** sends what the user typed to GitHub (the user's
+  own token, or the browser). It never carries health data, database
+  contents or logs ([permissions](../dependencies.md#permissions)).
 - Pulsus reads a private snapshot of Amazfish's SQLite file and never
   writes to it ([Amazfish's data](../amazfish-data.md)); the Flatpak gets
   read-only access to Amazfish's two possible data folders.

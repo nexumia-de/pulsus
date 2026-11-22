@@ -237,3 +237,26 @@ def test_without_a_database(app, monkeypatch, tmp_path):
     iterate()
     assert visible(window).get_tag() == "today"
     window.destroy()
+
+
+def test_report_a_problem_is_in_the_menu_and_about_has_the_filled_form(
+        app, demo_db, monkeypatch):
+    from phosh_toolkit import feedback
+    from pulsus import VERSION
+    assert app.lookup_action("report-problem") is not None
+    window = new_window(app, demo_db)
+    menu = window.menu_model()
+    entries = [(menu.get_item_attribute_value(i, "label", None).get_string(),
+                menu.get_item_attribute_value(i, "action", None).get_string())
+               for i in range(menu.get_n_items())]
+    labels = [label for label, _ in entries]
+    assert ("Report a Problem…", "app.report-problem") in entries
+    assert labels.index("Report a Problem…") + 1 == len(labels) - 1  # before About
+    app.activate_action("about", None)
+    iterate()
+    expected = feedback.issue_url("nexumia-de/pulsus", VERSION)
+    assert app.about.get_issue_url() == expected
+    assert expected.startswith("https://github.com/nexumia-de/pulsus/issues/new")
+    assert "template=bug.yml" in expected and f"version={VERSION}" in expected
+    app.about.force_close()
+    window.destroy()

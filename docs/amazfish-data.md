@@ -81,7 +81,8 @@ The manifest grants read-only access to exactly these two folders
 (`--filesystem=~/.local/share/harbour-amazfish:ro` and
 `--filesystem=~/.var/app/uk.co.piggz.amazfish/data/harbour-amazfish:ro`).
 Inside the sandbox the home directory is the real one, so the same paths
-work. Pulsus has no network and no D-Bus names.
+work. Pulsus has no D-Bus names of its own; the network and the keyring
+are for "Report a Problem…" only ([permissions](dependencies.md#permissions)).
 
 ## Reading safely
 

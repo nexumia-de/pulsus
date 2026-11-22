@@ -1,6 +1,6 @@
 # Decisions
 
-* [Amazfish collects, Pulsus only displays](display-only.md) - Read Amazfish's database read-only; no Bluetooth, network or sync of its own.
+* [Amazfish collects, Pulsus only displays](display-only.md) - Read Amazfish's database read-only; no Bluetooth, no sync, no network use for data.
 * [App name Pulsus](app-name.md) - Latin for pulse.
 * [AGPL-3.0 licence](license.md) - Like Ephyra and Nauta.
 * [Gaps in Amazfish's downloads go upstream](amazfish-gaps.md) - Missing sleep stages and resting heart rate: a report by the owner, no own fork.

@@ -1,5 +1,5 @@
-"""Preferences: style, the daily step goal, and where the data comes
-from (read-only)."""
+"""Preferences: style, the daily step goal, the maximum heart rate for
+the zones, and where the data comes from (read-only)."""
 from gi.repository import Adw, GLib, Gtk
 from phosh_toolkit.style import style_row
 
@@ -27,6 +27,31 @@ class PreferencesDialog(Adw.PreferencesDialog):
         goals.add(self.goal_row)
         page.add(goals)
 
+        low, high = settings.MAX_HEART_RATE
+        own = window.settings.max_heart_rate
+        store = window.source.store
+        highest = store.highest_heart_rate() if store else None
+        zones = Adw.PreferencesGroup(
+            title="Heart-Rate Zones",
+            description="The zones of a workout are tenths of your maximum "
+                        "heart rate.")
+        self.estimate_row = Adw.SwitchRow(
+            title="Estimate From Your Data",
+            subtitle=f"The highest reading Amazfish has stored: {highest} bpm"
+                     if highest else "The highest reading Amazfish has stored",
+            active=not own)
+        self.max_row = Adw.SpinRow(
+            title="Maximum Heart Rate", subtitle="Beats per minute",
+            adjustment=Gtk.Adjustment(lower=low, upper=high, step_increment=1,
+                                      page_increment=5,
+                                      value=own or min(max(highest or 180, low), high)),
+            sensitive=bool(own))
+        self.estimate_row.connect("notify::active", self._on_max)
+        self.max_row.connect("notify::value", self._on_max)
+        zones.add(self.estimate_row)
+        zones.add(self.max_row)
+        page.add(zones)
+
         data = Adw.PreferencesGroup(
             title="Data",
             description="Watch Health reads Amazfish's database and never changes it. "
@@ -46,4 +71,11 @@ class PreferencesDialog(Adw.PreferencesDialog):
 
     def _on_goal(self, row, *_):
         self.window.settings.step_goal = settings.STEP_GOALS[row.get_selected()]
+        self.window.save_settings()
+
+    def _on_max(self, *_):
+        estimate = self.estimate_row.get_active()
+        self.max_row.set_sensitive(not estimate)
+        self.window.settings.max_heart_rate = \
+            0 if estimate else int(self.max_row.get_value())
         self.window.save_settings()

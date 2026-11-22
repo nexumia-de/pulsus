@@ -26,3 +26,9 @@
 .pulsus-chart-card {
   padding: 12px;
 }
+
+/* The bar of a heart-rate zone row: short, so the zone's limits keep
+   their line at 360 px. */
+.pulsus-zone-bar > trough {
+  min-width: 56px;
+}

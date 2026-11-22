@@ -12,6 +12,7 @@ Change history is in [log.md](log.md).
 # Plan
 
 * [Roadmap](roadmap.md) - Goals and exit criteria of the milestones; the work items are GitHub issues.
+* [Owner checks](owner-checks.md) - What only the owner can do: checks on the phone with the real data, release settings, the report to Amazfish.
 
 # Design
 
@@ -27,4 +28,4 @@ Change history is in [log.md](log.md).
 
 # Decision records
 
-* [Decisions](decisions/index.md) - Display only on top of Amazfish, name, licence.
+* [Decisions](decisions/index.md) - Display only on top of Amazfish, name, licence, Amazfish's gaps go upstream through the owner, routes without map tiles.

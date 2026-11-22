@@ -32,7 +32,7 @@ dbus-run-session -- xvfb-run -a /usr/bin/python3.12 -m pytest   # all tests, as 
 
 Other states: `-a "app.show-metric('sleep:day')"`,
 `-a "app.show-metric('heart-rate:month')"`, `-a app.show-workouts`,
-`-a app.show-latest-workout`. `PULSUS_DEBUG=1` logs snapshots.
+`-a app.show-latest-workout`, `-a app.show-summary`. `PULSUS_DEBUG=1` logs snapshots.
 
 # Flatpak
 

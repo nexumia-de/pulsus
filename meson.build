@@ -18,11 +18,13 @@ python.install_sources(
   'pulsus/card.py',
   'pulsus/charts.py',
   'pulsus/demo.py',
+  'pulsus/insight.py',
   'pulsus/main.py',
   'pulsus/metrics.py',
   'pulsus/preferences.py',
   'pulsus/settings.py',
   'pulsus/stats.py',
+  'pulsus/summary.py',
   'pulsus/text.py',
   'pulsus/today.py',
   'pulsus/window.py',
@@ -34,9 +36,11 @@ python.install_sources(
   'pulsus/data/__init__.py',
   'pulsus/data/location.py',
   'pulsus/data/records.py',
+  'pulsus/data/report.py',
   'pulsus/data/sleep.py',
   'pulsus/data/source.py',
   'pulsus/data/store.py',
+  'pulsus/data/track.py',
   'pulsus/data/values.py',
   subdir: 'pulsus' / 'data',
 )
@@ -47,6 +51,13 @@ python.install_sources(
   'pulsus/metric/period.py',
   'pulsus/metric/view.py',
   subdir: 'pulsus' / 'metric',
+)
+python.install_sources(
+  'pulsus/workout/__init__.py',
+  'pulsus/workout/page.py',
+  'pulsus/workout/route.py',
+  'pulsus/workout/zones.py',
+  subdir: 'pulsus' / 'workout',
 )
 # Loaded next to the Python files, also from the source tree.
 install_data('pulsus/style.css', install_dir: pythondir / 'pulsus')

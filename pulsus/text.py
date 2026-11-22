@@ -18,6 +18,12 @@ def duration(value):
     return f"{minutes} min"
 
 
+def minutes_seconds(seconds):
+    """332 -> '5:32 min'."""
+    seconds = round(seconds)
+    return f"{seconds // 60}:{seconds % 60:02d} min"
+
+
 def hours(value):
     """timedelta -> hours as a float (for charts)."""
     return value.total_seconds() / 3600

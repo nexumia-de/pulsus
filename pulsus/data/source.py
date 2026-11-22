@@ -59,7 +59,7 @@ class Source(GObject.Object):
             return False
         try:
             target = snapshot(self.path, settings.cache_dir() / "amazfish-snapshot.sqlite")
-            new = Store(target)
+            new = Store(target, folder=self.path.parent)
         except Exception as e:   # sqlite3.Error, OSError: keep the old one
             log.warning("can't read %s: %s", self.path, e)
             self.error = str(e)

@@ -29,12 +29,14 @@ workouts ([visualisation](visualisation.md)).
 it finds the owner's Amazfish database; the meaning of `raw_kind`, heart
 rate 0/255 and timestamps checked against the owner's data and the
 watch's own display; pages open fast with the owner's full history.
+What is left needs the phone: [owner checks](owner-checks.md).
 
-# M2 – Deeper insight
+# M2 – Deeper insight (done 2026-11-22)
 
 **Goal**: what the best fitness apps show beyond daily values.
 
-**Exit criteria**: workout maps from the GPX track, heart-rate zones,
+**Exit criteria**: workout routes from the GPX track
+([without map tiles](decisions/route-without-map.md)), heart-rate zones,
 records and streaks, weekly summaries.
 
 # Risks
@@ -42,4 +44,5 @@ records and streaks, weekly summaries.
 - **Amazfish's table layout** has no stability promise
   ([display only](decisions/display-only.md)).
 - **Sleep without stages** until Amazfish fetches Zepp OS sleep data
-  ([Amazfish's data](amazfish-data.md#sleep)).
+  ([Amazfish's data](amazfish-data.md#sleep)); the owner reports
+  the gap upstream ([decision](decisions/amazfish-gaps.md)).

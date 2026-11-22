@@ -5,6 +5,7 @@ from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
 from pulsus.data import sleep as sleep_
+from pulsus.data import track as track_
 from pulsus.data.records import Minute, Workout
 from pulsus.data.values import HR_MAX, HR_MIN, KIND_SLEEP, RESTING_READINGS
 
@@ -23,8 +24,11 @@ class Store:
     """Questions about one snapshot of the database. Every method copes
     with tables that an older Amazfish did not create."""
 
-    def __init__(self, path):
+    def __init__(self, path, folder=None):
+        """`folder`: where Amazfish keeps its files (the GPX tracks); the
+        snapshot's own folder if not given."""
         self.path = Path(path)
+        self.folder = Path(folder) if folder is not None else self.path.parent
         self.db = sqlite3.connect(f"{self.path.resolve().as_uri()}?mode=ro", uri=True)
         self.tables = {name for (name,) in self.db.execute(
             "SELECT name FROM sqlite_master WHERE type = 'table'")}
@@ -220,13 +224,13 @@ class Store:
         """Newest first, with their meta data."""
         if not self.has("sports_data"):
             return []
-        sql = ("SELECT id, kind, name, start_timestamp, end_timestamp, "
-               "gpx IS NOT NULL AND length(gpx) > 0 FROM sports_data "
-               "ORDER BY start_timestamp DESC")
+        sql = ("SELECT id, kind, name, start_timestamp, end_timestamp, gpx "
+               "FROM sports_data ORDER BY start_timestamp DESC")
         if limit:
             sql += f" LIMIT {int(limit)}"
         result = [Workout(i, kind or 0, name or "", datetime.fromtimestamp(s or 0),
-                          datetime.fromtimestamp(e or s or 0), bool(track))
+                          datetime.fromtimestamp(e or s or 0),
+                          track_.locate(track, self.folder) is not None)
                   for i, kind, name, s, e, track in self._rows(sql)]
         if result and self.has("sports_meta"):
             by_id = {w.id: w for w in result}
@@ -242,3 +246,33 @@ class Store:
             if w.id == workout_id:
                 return w
         return None
+
+    def track(self, workout_id):
+        """The GPS points of a workout (data/track.py), [] without one."""
+        cache = self._cache.setdefault("track", {})
+        if workout_id not in cache:
+            rows = self._rows("SELECT gpx FROM sports_data WHERE id = ?", workout_id) \
+                if self.has("sports_data") else []
+            found = track_.locate(rows[0][0], self.folder) if rows else None
+            cache[workout_id] = track_.read(found) if found is not None else []
+        return cache[workout_id]
+
+    def highest_heart_rate(self):
+        """The highest heart rate Amazfish has stored: of all minutes and
+        of the workouts' own maximum. None without readings."""
+        if "highest" not in self._cache:
+            values = []
+            if self.has("mi_band_activity"):
+                values += [v for (v,) in self._rows(
+                    "SELECT max(heartrate) FROM mi_band_activity "
+                    "WHERE heartrate BETWEEN ? AND ?", HR_MIN, HR_MAX) if v]
+            if self.has("sports_meta"):
+                for (value,) in self._rows(
+                        "SELECT value FROM sports_meta WHERE key = 'maxHR'"):
+                    try:
+                        if HR_MIN <= float(value) <= HR_MAX:
+                            values.append(round(float(value)))
+                    except (TypeError, ValueError):
+                        pass
+            self._cache["highest"] = max(values) if values else None
+        return self._cache["highest"]

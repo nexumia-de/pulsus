@@ -80,8 +80,10 @@ def create(path, now=None, days=DAYS, seed=7):
     for n in range(-1, days):
         evening = first + timedelta(days=n)
         late = evening.weekday() >= 4
-        bed = datetime.combine(evening, time(23, 0)) + timedelta(
-            minutes=rng.randint(-40, 40) + (40 if late else 0))
+        # In bed by 23:30 at the latest, so every day has its night's
+        # sleep from midnight on.
+        bed = datetime.combine(evening, time(22, 40)) + timedelta(
+            minutes=rng.randint(-40, 30) + (20 if late else 0))
         wake = datetime.combine(evening + timedelta(days=1), time(6, 40)) + timedelta(
             minutes=rng.randint(-25, 30) + (75 if late else 0))
         nights.append((bed, wake))
@@ -117,7 +119,9 @@ def create(path, now=None, days=DAYS, seed=7):
             elif asleep:
                 kind = KIND_SLEEP
                 # Wake-ups now and then, a few minutes long.
-                if awake_until is None and rng.random() < 0.004:
+                deep = all(t < bed or t >= bed + timedelta(hours=1)
+                           for bed, _ in tonight)
+                if awake_until is None and deep and rng.random() < 0.004:
                     awake_until = t + timedelta(minutes=rng.randint(4, 18))
                 if awake_until is not None:
                     if t < awake_until:
@@ -141,24 +145,29 @@ def create(path, now=None, days=DAYS, seed=7):
                 hr = rest + 18 + 8 * math.sin(m / 90) + rng.gauss(0, 4)
                 if 7 * 60 <= m <= 22 * 60 and rng.random() < 0.25:
                     steps = rng.randint(2, 30)
-            if hr is not None and rng.random() < 0.06:
+            if hr is not None and m and rng.random() < 0.06:
                 hr = None              # the watch missed a reading
             minutes.append((int(t.timestamp()), _iso(t), 1, 1, intensity, steps,
                             kind, 255 if hr is None else int(round(hr))))
-            if not asleep and kind != KIND_CHARGING and m % 30 == 0 and m > 6 * 60:
+            # Stress and SpO₂ are measured around the clock, so the day has
+            # its readings from its first minute on.
+            if kind != KIND_CHARGING and m % 30 == 0:
                 level = 28 + 14 * math.sin(m / 200) + (12 if day.weekday() < 5 else 0)
+                if asleep:
+                    level -= 12
                 stress.append((int(t.timestamp()), _iso(t),
                                max(1, min(99, int(level + rng.gauss(0, 8)))), 1))
-            if not asleep and kind != KIND_CHARGING and m % 120 == 30 and m > 8 * 60:
+            if kind != KIND_CHARGING and m % 120 == 0:
                 spo2.append((int(t.timestamp()), _iso(t), 1, rng.choice((96, 97, 97, 98, 98, 99))))
-        reading = datetime.combine(day, time(5, 30))
+        # HRV and skin temperature: one reading in the night.
+        reading = datetime.combine(day, time())
         if reading <= now:
             hrv.append((int(reading.timestamp()), _iso(reading),
                         int(42 + 10 * fitness + rng.gauss(0, 5))))
             temps.append((int(reading.timestamp()), _iso(reading),
                           round(34.2 + rng.gauss(0, 0.25), 2), "wrist", "skin"))
         if workout and workout[2] <= now:
-            _workout(db, rng, *workout)
+            _workout(db, path.parent, rng, *workout)
         earned = min(30.0, active * (0.55 if workout and workout[0] == RUNNING else 0.15))
         pai_days.append(earned)
         total = sum(pai_days[-7:])
@@ -190,9 +199,39 @@ def create(path, now=None, days=DAYS, seed=7):
 
 
 NAMES = {RUNNING: "Running", WALKING: "Walking", CYCLING: "Cycling"}
+# Where the made-up person starts: a point on a plain grid, no real home.
+HOME = (52.0, 13.0)
 
 
-def _workout(db, rng, kind, start, end):
+def _gpx(rng, name, start, seconds, distance):
+    """A loop of `distance` metres from HOME as Amazfish writes it: one
+    point every 5 s with its time, next to the database as <name>.gpx
+    (sports_data.gpx holds the path of the .tcx twin)."""
+    radius = distance / (2 * math.pi)
+    stretch = rng.uniform(0.6, 0.9)          # an oval, not a circle
+    turn = rng.uniform(0, 2 * math.pi)
+    lat_m = 111195.0
+    lon_m = lat_m * math.cos(math.radians(HOME[0]))
+    rows = []
+    for t in range(0, seconds + 1, 5):
+        angle = 2 * math.pi * t / seconds
+        # Start and end on the loop's edge at HOME.
+        x = radius * (1 - math.cos(angle)) / stretch
+        y = radius * math.sin(angle) * stretch + 12 * math.sin(angle * 7)
+        east = x * math.cos(turn) - y * math.sin(turn)
+        north = x * math.sin(turn) + y * math.cos(turn)
+        when = (start + timedelta(seconds=t)).astimezone().isoformat()
+        rows.append(f'<trkpt lat="{HOME[0] + north / lat_m:.6f}" '
+                    f'lon="{HOME[1] + east / lon_m:.6f}">\n  <ele>40</ele>\n'
+                    f'  <time>{when}</time>\n</trkpt>')
+    return ('<?xml version="1.0" standalone="yes"?>\n'
+            '<gpx version="1.1" creator="Pulsus demo" '
+            'xmlns="http://www.topografix.com/GPX/1/1">\n'
+            f'<metadata>\n  <name>{name}</name>\n</metadata>\n<trk>\n<trkseg>\n'
+            + "\n".join(rows) + '\n</trkseg>\n</trk>\n</gpx>\n')
+
+
+def _workout(db, folder, rng, kind, start, end):
     seconds = int((end - start).total_seconds())
     speed = {RUNNING: rng.uniform(2.7, 3.2), WALKING: rng.uniform(1.3, 1.6),
              CYCLING: rng.uniform(5.5, 7.0)}[kind]
@@ -205,7 +244,8 @@ def _workout(db, rng, kind, start, end):
         "base_altitude, device_id, user_id, gpx) VALUES (?, 1, ?, ?, ?, ?, ?, "
         "?, ?, ?, 1, 1, ?)",
         (name, int(start.timestamp()), _iso(start), int(end.timestamp()), _iso(end),
-         kind, 0.0, 0.0, 0.0, ""))
+         kind, HOME[1], HOME[0], 40.0, str(folder / f"{name}.tcx")))
+    (folder / f"{name}.gpx").write_text(_gpx(rng, name, start, seconds, distance))
     meta = [
         ("distanceMeters", f"{distance:.0f}", "meters"),
         ("workoutDuration", str(seconds), "seconds"),

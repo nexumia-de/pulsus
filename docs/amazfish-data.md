@@ -24,6 +24,21 @@ sources:
   - id: af-summary
     resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/daemon/src/devices/huami/zeppos/zepposactivitysummaryparser.cpp
     title: Amazfish ZeppOsActivitySummaryParser (workout meta keys and units)
+  - id: af-fetcher
+    resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/daemon/src/devices/huami/huamifetcher.cpp
+    title: Amazfish HuamiFetcher::startFetchData (which request fetches what)
+  - id: af-sync
+    resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/daemon/src/deviceinterface.cpp
+    title: Amazfish DeviceInterface (hourly sync fetches TYPE_ACTIVITY only)
+  - id: af-sports-page
+    resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/ui/qml/pages/SportsSummaryPage.qml
+    title: Amazfish SportsSummaryPage.qml ("Download Next Activity" fetches TYPE_GPS_TRACK)
+  - id: af-detail
+    resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/daemon/src/operations/huami/sportsdetailoperation.cpp
+    title: Amazfish SportsDetailOperation (GPX and TCX files, the path stored in sports_data.gpx)
+  - id: af-gpx
+    resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/daemon/src/devices/abstractactivitydetailparser.cpp
+    title: Amazfish AbstractActivityDetailParser::toText (the GPX it writes)
   - id: af-kind
     resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/lib/src/activitykind.h
     title: Amazfish lib/src/activitykind.h (workout kinds)
@@ -43,8 +58,8 @@ sources:
 Read from Amazfish's source at commit `730b542` (2026-11-04) and, for
 the meaning of Zepp OS values, Gadgetbridge at `351b038` (2026-11-04),
 both cloned with git. Facts only: Pulsus contains no code of either
-(GPL-3.0, AGPL-3.0). **Not yet checked against the owner's database**
-(issue in M1).
+(GPL-3.0, AGPL-3.0). **Not yet checked against the owner's database**:
+the checklist is in [owner checks](owner-checks.md#real-data-on-the-phone-1).
 
 # Where the database is
 
@@ -80,13 +95,24 @@ writing, and again when the window comes back to the front
 (`data/source.py`). Older Amazfish versions lack some tables; every query
 checks first.
 
+## Checking on the phone
+
+About ▸ Troubleshooting shows a text made by `data/report.py`: the
+database path, the rows of every table Pulsus reads with first and last
+day, the twelve most frequent `raw_kind` values with their minutes, how
+many heart-rate minutes are valid, 255 or 0, and the number of workouts.
+Counts and dates only, no readings; it is made on demand and stored
+nowhere. It answers "did Amazfish download this at all" without a shell
+on the phone.
+
 # What the Balance delivers
 
 `ZeppOSDevice::supportedDataTypes` lists activity, GPS tracks, heart
 rate, PAI, SpO₂, stress, HRV and temperature[^af-zepp]. **No sleep
 sessions, no resting or maximum heart rate, no breathing rate**: the
 watch has them, Gadgetbridge fetches them[^gb-fetch], Amazfish does not
-(issue for an Amazfish change in the backlog).
+([decision](decisions/amazfish-gaps.md): the owner reports it to
+Amazfish; no fork).
 
 # Tables
 
@@ -101,10 +127,46 @@ columns are not used.
 | `spo2` | `spo2_timestamp`, `spo2_value` | % |
 | `temperature` | `temperature_timestamp`, `temperature_value` | °C (skin) |
 | `pai` | `pai_date`, `pai_today`, `pai_total` | PAI earned that day and of the last 7 days |
-| `sports_data` | `id`, `kind`, `name`, `start_timestamp`, `end_timestamp`, `gpx` | Workouts; `kind` is Amazfish's `ActivityKind`[^af-kind], `name` like `Running-20261104-0730` |
+| `sports_data` | `id`, `kind`, `name`, `start_timestamp`, `end_timestamp`, `gpx` | Workouts; `kind` is Amazfish's `ActivityKind`[^af-kind], `name` like `Running-20261104-0730`, `gpx` the path of the track file ([GPS track](#gps-track)) |
 | `sports_meta` | `sport_id`, `key`, `value`, `unit` | Workout numbers: `distanceMeters`, `workoutDuration` (s), `averageHR`, `maxHR`, `caloriesBurnt`, `paceAvg` (min/km), `steps`, …[^af-summary] |
 
-Not read yet: `spo2sleep`, `info_log` (battery), the GPX track.
+Not read yet: `spo2sleep`, `info_log` (battery).
+
+## Workouts
+
+Amazfish fetches a workout only for a `TYPE_GPS_TRACK`
+request[^af-fetcher]. Its hourly automatic sync and its "Download Data"
+menu item ask for `TYPE_ACTIVITY` only[^af-sync]; the one place that
+asks for workouts is the **Sports** page ("Sports Activities") with the
+action **Download Next Activity**, which fetches one workout, the next
+after the last one fetched, per tap[^af-sports-page]. So `sports_data`
+stays empty until the user does that, however often the watch syncs.
+This is the likely reason for "no workouts" with real data (#8, reported
+2026-11-06); the row count is in About ▸ Troubleshooting. Pulsus's empty
+Workouts page says how to download them. Pulsus's query matches the
+table as Amazfish creates it (`start_timestamp` and `end_timestamp` are
+unsigned integers in Unix seconds, written with the row[^af-schema]).
+
+## GPS track
+
+The column `sports_data.gpx` does not hold the track. After a workout's
+detail is fetched, Amazfish writes `<name>.gpx` and `<name>.tcx` into
+its data folder, next to the database (or into `~/Laufhelden` if that
+folder exists, a Sailfish app), and stores the **path of the `.tcx`
+file** in the column[^af-detail]. Amazfish's own UI falls back to the
+column's text if no such file exists, so old rows may hold GPX text.
+
+The GPX has one `<trkpt lat lon>` per valid GPS sample with `<ele>`,
+`<time>` (ISO 8601 with offset) and a Garmin `TrackPointExtension` with
+heart rate, cadence, speed and temperature[^af-gpx].
+
+Pulsus (`data/track.py`) takes the file name from the column, swaps the
+ending for `.gpx` and reads that file **only in the database's folder**,
+which is the folder the Flatpak may read; a path elsewhere
+(`~/Laufhelden`) gives no track. Text starting with `<` is read as GPX.
+It uses the coordinates and times: the route, its length and the time
+per kilometre. The heart rate of a workout keeps coming from the minute
+rows, so workouts with and without GPS show the same numbers.
 
 ## Heart rate
 

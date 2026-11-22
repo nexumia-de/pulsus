@@ -36,6 +36,7 @@ class Application(Adw.Application):
         for name, callback in (("about", self._on_about),
                                ("preferences", self._on_preferences),
                                ("show-workouts", self._on_show_workouts),
+                               ("show-summary", self._on_show_summary),
                                ("show-latest-workout", self._on_latest_workout),
                                ("quit", self._on_quit)):
             action = Gio.SimpleAction.new(name, None)
@@ -95,6 +96,10 @@ class Application(Adw.Application):
         if self._window():
             self._window().show_workouts()
 
+    def _on_show_summary(self, *_):
+        if self._window():
+            self._window().show_summary()
+
     def _on_latest_workout(self, *_):
         window = self._window()
         if window and window.source.found:
@@ -126,6 +131,15 @@ class Application(Adw.Application):
                      "maker. Not a medical device.",
         )
         dialog.add_link("Support Development", SUPPORT_URL)
+        window = self._window()
+        if window is not None:
+            # Troubleshooting: what Amazfish's database holds, counts only.
+            from pulsus import data
+            from pulsus.data.report import report
+            dialog.set_debug_info(report(window.source.path, window.source.store,
+                                         data.searched_paths()))
+            dialog.set_debug_info_filename("watch-health-data.txt")
+        self.about = dialog
         dialog.present(self._window())
 
 

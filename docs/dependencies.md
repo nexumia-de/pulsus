@@ -17,12 +17,12 @@ installs no licence files.
 
 | Module | Version | Licence | Licence files |
 |---|---|---|---|
-| `phosh-toolkit` | tag `v0.8.0` (commit `3ec15b8`) | GPL-3.0-or-later (own code, same author) | `LICENSE` → `/app/share/licenses/<app id>/phosh-toolkit/` |
+| `phosh-toolkit` | tag `v0.8.1` (commit `1910057`) | GPL-3.0-or-later (own code, same author) | `LICENSE` → `/app/share/licenses/<app id>/phosh-toolkit/` |
 
 Only `lib/phosh_toolkit/` is installed; Pulsus uses `settings`
 (`JsonStore`, `app_dir`), `style` (light/dark)
 ([shared code](../../phosh-toolkit/docs/shared-connection.md#used-by))
-and, since `v0.8.0`, `feedback` (Report a Problem…, with its `http`,
+and, since `v0.8.1`, `feedback` (Report a Problem…, with its `http`,
 `keyring`, `feedback_dialog` and `feedback_report` modules;
 [feedback](../../phosh-toolkit/docs/feedback.md)).
 GPL-3.0-or-later code may be combined with Pulsus's AGPL-3.0-or-later

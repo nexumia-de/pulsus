@@ -27,7 +27,7 @@ Amazfish's own charts are basic. Options looked at:
 
 - Amazfish stays the only program that talks to the watch. Pulsus has
   no Bluetooth, no network use for data, no D-Bus calls to Amazfish and
-  no sync button. One exception, added 2026-11-22 with toolkit `v0.8.0`:
+  no sync button. One exception, added 2026-11-22 with toolkit `v0.8.1`:
   **Report a Problem…** sends what the user typed to GitHub (the user's
   own token, or the browser). It never carries health data, database
   contents or logs ([permissions](../dependencies.md#permissions)).

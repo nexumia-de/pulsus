@@ -57,10 +57,17 @@ current versions), on 2026-11-04 at the owner's request:
   numbers, normal range, "How It Is Measured". Day views: steps per
   hour, heart rate as 5-minute averages, sleep as a timeline, single
   readings as dots.
-- **Workouts**: by month; a workout shows duration, times, heart rate
-  during it (from the minute rows) and the watch's numbers.
+- **Workouts**: by month.
+- **Workout**: duration and times; the route from the GPS track, to
+  scale, north up, start as a dot and end as a square, a scale bar, no
+  map ([decision](decisions/route-without-map.md)), a jump of more than
+  500 m breaks the line; the heart rate during it (from the minute
+  rows); minutes in five heart-rate zones as rows with a bar, limits in
+  percent and bpm, the maximum heart rate named with its source; the
+  time of each kilometre from the track, pauses included; the watch's
+  numbers.
 
 # Not yet
 
-Maps of GPS tracks, heart-rate zones, sleep stages, records and streaks:
-issues in the later milestones.
+Sleep stages (Amazfish does not store them,
+[decision](decisions/amazfish-gaps.md)); records and streaks.

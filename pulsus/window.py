@@ -123,7 +123,7 @@ class Window(Adw.ApplicationWindow):
             self.nav.push(WorkoutsPage(self))
 
     def show_workout(self, workout_id):
-        from pulsus.workouts import WorkoutPage
+        from pulsus.workout.page import WorkoutPage
         workout = self.source.store.workout(workout_id) if self.source.found else None
         if workout is not None:
             self.nav.push(WorkoutPage(self, workout))

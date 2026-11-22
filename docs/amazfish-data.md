@@ -33,6 +33,12 @@ sources:
   - id: af-sports-page
     resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/ui/qml/pages/SportsSummaryPage.qml
     title: Amazfish SportsSummaryPage.qml ("Download Next Activity" fetches TYPE_GPS_TRACK)
+  - id: af-detail
+    resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/daemon/src/operations/huami/sportsdetailoperation.cpp
+    title: Amazfish SportsDetailOperation (GPX and TCX files, the path stored in sports_data.gpx)
+  - id: af-gpx
+    resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/daemon/src/devices/abstractactivitydetailparser.cpp
+    title: Amazfish AbstractActivityDetailParser::toText (the GPX it writes)
   - id: af-kind
     resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/lib/src/activitykind.h
     title: Amazfish lib/src/activitykind.h (workout kinds)
@@ -121,10 +127,10 @@ columns are not used.
 | `spo2` | `spo2_timestamp`, `spo2_value` | % |
 | `temperature` | `temperature_timestamp`, `temperature_value` | °C (skin) |
 | `pai` | `pai_date`, `pai_today`, `pai_total` | PAI earned that day and of the last 7 days |
-| `sports_data` | `id`, `kind`, `name`, `start_timestamp`, `end_timestamp`, `gpx` | Workouts; `kind` is Amazfish's `ActivityKind`[^af-kind], `name` like `Running-20261104-0730` |
+| `sports_data` | `id`, `kind`, `name`, `start_timestamp`, `end_timestamp`, `gpx` | Workouts; `kind` is Amazfish's `ActivityKind`[^af-kind], `name` like `Running-20261104-0730`, `gpx` the path of the track file ([GPS track](#gps-track)) |
 | `sports_meta` | `sport_id`, `key`, `value`, `unit` | Workout numbers: `distanceMeters`, `workoutDuration` (s), `averageHR`, `maxHR`, `caloriesBurnt`, `paceAvg` (min/km), `steps`, …[^af-summary] |
 
-Not read yet: `spo2sleep`, `info_log` (battery), the GPX track.
+Not read yet: `spo2sleep`, `info_log` (battery).
 
 ## Workouts
 
@@ -140,6 +146,27 @@ This is the likely reason for "no workouts" with real data (#8, reported
 Workouts page says how to download them. Pulsus's query matches the
 table as Amazfish creates it (`start_timestamp` and `end_timestamp` are
 unsigned integers in Unix seconds, written with the row[^af-schema]).
+
+## GPS track
+
+The column `sports_data.gpx` does not hold the track. After a workout's
+detail is fetched, Amazfish writes `<name>.gpx` and `<name>.tcx` into
+its data folder, next to the database (or into `~/Laufhelden` if that
+folder exists, a Sailfish app), and stores the **path of the `.tcx`
+file** in the column[^af-detail]. Amazfish's own UI falls back to the
+column's text if no such file exists, so old rows may hold GPX text.
+
+The GPX has one `<trkpt lat lon>` per valid GPS sample with `<ele>`,
+`<time>` (ISO 8601 with offset) and a Garmin `TrackPointExtension` with
+heart rate, cadence, speed and temperature[^af-gpx].
+
+Pulsus (`data/track.py`) takes the file name from the column, swaps the
+ending for `.gpx` and reads that file **only in the database's folder**,
+which is the folder the Flatpak may read; a path elsewhere
+(`~/Laufhelden`) gives no track. Text starting with `<` is read as GPX.
+It uses the coordinates and times: the route, its length and the time
+per kilometre. The heart rate of a workout keeps coming from the minute
+rows, so workouts with and without GPS show the same numbers.
 
 ## Heart rate
 

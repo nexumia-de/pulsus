@@ -14,7 +14,7 @@ import gi  # noqa: E402
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, GLib  # noqa: E402
+from gi.repository import Adw, GLib, Gtk  # noqa: E402
 
 from pulsus import data, settings  # noqa: E402
 from pulsus.data import location, source  # noqa: E402
@@ -29,6 +29,8 @@ def app():
     application = Application()
     application.register(None)
     Adw.init()
+    # A popped page leaves the stack at once, not after its animation.
+    Gtk.Settings.get_default().set_property("gtk-enable-animations", False)
     yield application
 
 
@@ -55,7 +57,8 @@ def test_today_metrics_and_workouts(app, demo_db, tmp_path):
     from pulsus.metric import RANGES, MetricPage
     from pulsus.preferences import PreferencesDialog
     from pulsus.today import TodayPage
-    from pulsus.workouts import WorkoutPage, WorkoutsPage
+    from pulsus.workout.page import WorkoutPage
+    from pulsus.workouts import WorkoutsPage
 
     db = tmp_path / "amazfish.kexi"
     shutil.copy(demo_db, db)
@@ -103,7 +106,12 @@ def test_today_metrics_and_workouts(app, demo_db, tmp_path):
     latest = window.source.store.workouts(limit=1)[0]
     window.show_workout(latest.id)
     iterate()
-    assert isinstance(visible(window), WorkoutPage)
+    page = visible(window)
+    assert isinstance(page, WorkoutPage)
+    # The copied database has no track files next to it: no route, but
+    # the zones from the stored minutes.
+    assert page.route is None and page.splits is None
+    assert page.zones is not None
     window.nav.pop_to_page(today)
 
     # About: the troubleshooting page says what the database holds.
@@ -118,6 +126,39 @@ def test_today_metrics_and_workouts(app, demo_db, tmp_path):
     iterate()
     assert "12,000" in today.metric_cards["steps"].context.get_label()
     assert settings.Store().load().step_goal == 12000
+    window.destroy()
+
+
+def test_workout_with_a_track_shows_route_zones_and_kilometres(app, tmp_path):
+    from pulsus import demo
+    from pulsus.preferences import PreferencesDialog
+    from pulsus.workout.page import WorkoutPage
+    window = new_window(app, demo.create(tmp_path / "amazfish.kexi", days=10))
+    latest = window.source.store.workouts(limit=1)[0]
+    window.show_workout(latest.id)
+    iterate()
+    page = visible(window)
+    assert isinstance(page, WorkoutPage)
+    assert page.route is not None and "Route of about" in page.route.summary
+    assert page.splits is not None
+    highest = window.source.store.highest_heart_rate()
+    assert f"{highest} bpm" in page.zones.get_description()
+    assert "estimate" in page.zones.get_description()
+    window.nav.pop()
+
+    # An own maximum heart rate replaces the estimate and is kept.
+    dialog = PreferencesDialog(window)
+    assert dialog.estimate_row.get_active() and not dialog.max_row.get_sensitive()
+    dialog.estimate_row.set_active(False)
+    dialog.max_row.set_value(190)
+    iterate()
+    assert settings.Store().load().max_heart_rate == 190
+    window.show_workout(latest.id)
+    iterate()
+    assert "190 bpm (set in Preferences)" in visible(window).zones.get_description()
+    dialog.estimate_row.set_active(True)
+    iterate()
+    assert settings.Store().load().max_heart_rate == 0
     window.destroy()
 
 

@@ -1,9 +1,8 @@
-"""Workouts: the list, grouped by month, and one workout with its numbers
-and the heart rate during it (docs/visualisation.md#workouts)."""
+"""Workouts: their kinds and numbers, and the list grouped by month
+(docs/visualisation.md#pages). One workout's page is pulsus/workout/."""
 from gi.repository import Adw, GLib, Gtk
 
 from pulsus import text
-from pulsus.charts import Chart, Series
 
 # Amazfish's ActivityKind values (lib/src/activitykind.h) for the kinds
 # a Zepp OS watch records most; other kinds take the name Amazfish
@@ -97,61 +96,3 @@ class WorkoutsPage(Adw.NavigationPage):
             row.add_suffix(Gtk.Image(icon_name="go-next-symbolic"))
             row.connect("activated", lambda r, wid=w.id: self.window.show_workout(wid))
             group.add(row)
-
-
-class WorkoutPage(Adw.NavigationPage):
-    def __init__(self, window, workout):
-        super().__init__(title=kind_name(workout), tag=f"workout-{workout.id}")
-        toolbar = Adw.ToolbarView()
-        toolbar.add_top_bar(Adw.HeaderBar())
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=18,
-                      margin_top=12, margin_bottom=24, margin_start=12, margin_end=12)
-        head = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
-        title = Gtk.Label(label=text.duration(workout.duration), xalign=0)
-        title.add_css_class("title-1")
-        title.add_css_class("numeric")
-        head.append(title)
-        when = Gtk.Label(label=f"{text.day(workout.start.date())}, "
-                               f"{text.clock(workout.start)}–{text.clock(workout.end)}",
-                         xalign=0, wrap=True)
-        when.add_css_class("dimmed")
-        head.append(when)
-        box.append(head)
-
-        minutes = window.source.store.minutes(workout.start, workout.end)
-        readings = [(m.ts - workout.start.timestamp(), m.heart_rate)
-                    for m in minutes if m.heart_rate is not None]
-        if readings:
-            card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-            card.add_css_class("card")
-            card.add_css_class("pulsus-chart-card")
-            card.append(Gtk.Label(label="Heart Rate", xalign=0, css_classes=["heading"]))
-            chart = Chart(height=200)
-            length = max(60.0, (workout.end - workout.start).total_seconds())
-            step = 600 if length <= 3600 else 1800
-            values = [v for _, v in readings]
-            chart.set_series(Series(
-                readings, "line", 0, length, slots=False, gap=180,
-                y_format=lambda v: f"{v:g}",
-                describe=lambda x, y: f"{int(x // 60)} min: {y} bpm",
-                x_labels=[(t, f"{t // 60} min") for t in range(0, int(length) + 1, step)],
-                summary=f"Heart rate during the workout, {min(values)} to "
-                        f"{max(values)} bpm."))
-            card.append(chart)
-            box.append(card)
-
-        numbers = Adw.PreferencesGroup(title="Numbers")
-        shown = set()
-        for key, title_, how in NUMBERS:
-            value = workout.number(key)
-            if value:
-                row = Adw.ActionRow(title=title_)
-                row.add_suffix(Gtk.Label(label=how(value), css_classes=["numeric"]))
-                numbers.add(row)
-                shown.add(key)
-        if shown:
-            box.append(numbers)
-        clamp = Adw.Clamp(maximum_size=760, child=box)
-        toolbar.set_content(Gtk.ScrolledWindow(
-            child=clamp, hscrollbar_policy=Gtk.PolicyType.NEVER))
-        self.set_child(toolbar)

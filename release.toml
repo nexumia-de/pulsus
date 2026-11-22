@@ -31,5 +31,5 @@ actions = ["app.show-metric('sleep:day')"]
 
 [[screenshots.shot]]
 name = "workout"
-caption = "A workout with the heart rate during it"
+caption = "A workout with its route and heart rate"
 actions = ["app.show-latest-workout"]

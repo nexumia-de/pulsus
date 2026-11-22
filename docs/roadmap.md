@@ -35,7 +35,8 @@ What is left needs the phone: [owner checks](owner-checks.md).
 
 **Goal**: what the best fitness apps show beyond daily values.
 
-**Exit criteria**: workout maps from the GPX track, heart-rate zones,
+**Exit criteria**: workout routes from the GPX track
+([without map tiles](decisions/route-without-map.md)), heart-rate zones,
 records and streaks, weekly summaries.
 
 # Risks

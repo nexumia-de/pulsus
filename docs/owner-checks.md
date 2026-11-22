@@ -51,3 +51,19 @@ Amazfish downloads workouts only from its Sports page
       in Pulsus: open an issue with the Troubleshooting text.
 - [ ] If Download Next Activity stores nothing for the Balance, that is
       a gap in Amazfish and belongs in the report below.
+
+# Report to Amazfish (#4)
+
+[Decision](decisions/amazfish-gaps.md): the gap is reported upstream by
+the owner, in the owner's own words (Amazfish's `AI-Policy.md` does not
+accept AI-written reports or replies).
+
+- [ ] Check that <https://github.com/piggz/harbour-amazfish/issues> has
+      no report for it yet.
+- [ ] Open one. The facts, with sources, are in
+      [Amazfish's data](amazfish-data.md): for Zepp OS watches
+      `supportedDataTypes` has no sleep sessions, resting and maximum
+      heart rate or breathing rate; Gadgetbridge fetches them; the
+      sleep chart counts kinds 9 and 11 while the Balance stores 120.
+- [ ] If the Sports download stores nothing for the Balance (#8 above),
+      add that or report it separately.

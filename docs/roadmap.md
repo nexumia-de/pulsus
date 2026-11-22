@@ -43,4 +43,5 @@ records and streaks, weekly summaries.
 - **Amazfish's table layout** has no stability promise
   ([display only](decisions/display-only.md)).
 - **Sleep without stages** until Amazfish fetches Zepp OS sleep data
-  ([Amazfish's data](amazfish-data.md#sleep)).
+  ([Amazfish's data](amazfish-data.md#sleep)); the owner reports
+  the gap upstream ([decision](decisions/amazfish-gaps.md)).

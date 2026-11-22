@@ -105,7 +105,8 @@ on the phone.
 rate, PAI, SpO₂, stress, HRV and temperature[^af-zepp]. **No sleep
 sessions, no resting or maximum heart rate, no breathing rate**: the
 watch has them, Gadgetbridge fetches them[^gb-fetch], Amazfish does not
-(issue for an Amazfish change in the backlog).
+([decision](decisions/amazfish-gaps.md): the owner reports it to
+Amazfish; no fork).
 
 # Tables
 

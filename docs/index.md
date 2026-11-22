@@ -28,4 +28,4 @@ Change history is in [log.md](log.md).
 
 # Decision records
 
-* [Decisions](decisions/index.md) - Display only on top of Amazfish, name, licence.
+* [Decisions](decisions/index.md) - Display only on top of Amazfish, name, licence, Amazfish's gaps go upstream through the owner.

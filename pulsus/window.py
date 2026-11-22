@@ -31,6 +31,7 @@ class Window(Adw.ApplicationWindow):
 
     def menu_model(self):
         menu = Gio.Menu()
+        menu.append("Summary", "app.show-summary")
         menu.append("Workouts", "app.show-workouts")
         menu.append("Preferences", "app.preferences")
         menu.append(f"About {NAME}", "app.about")
@@ -122,6 +123,14 @@ class Window(Adw.ApplicationWindow):
             self.nav.pop_to_page(self.today)
             self.nav.push(WorkoutsPage(self))
 
+    def show_summary(self):
+        if not self.source.found:
+            return
+        from pulsus.summary import SummaryPage
+        if not isinstance(self.nav.get_visible_page(), SummaryPage):
+            self.nav.pop_to_page(self.today)
+            self.nav.push(SummaryPage(self))
+
     def show_workout(self, workout_id):
         from pulsus.workout.page import WorkoutPage
         workout = self.source.store.workout(workout_id) if self.source.found else None
@@ -130,5 +139,6 @@ class Window(Adw.ApplicationWindow):
 
     def save_settings(self):
         self.settings_store.save(self.settings)
-        if self.today is not None:
-            self.today.refresh()
+        for page in self._pages():
+            if hasattr(page, "refresh"):
+                page.refresh()

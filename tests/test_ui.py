@@ -114,6 +114,22 @@ def test_today_metrics_and_workouts(app, demo_db, tmp_path):
     assert page.zones is not None
     window.nav.pop_to_page(today)
 
+    # Summary: from the card, with streak, the week and records; a
+    # record opens its workout.
+    from pulsus.summary import SummaryPage
+    assert "streak" in today.summary_card.unit.get_label()
+    today.summary_card.emit("clicked")
+    iterate()
+    summary = visible(window)
+    assert isinstance(summary, SummaryPage)
+    titles = [g.get_title() for g in summary.groups]
+    assert titles == ["Last 7 Days", "Step Goal Streak", "Records"]
+    window.nav.pop_to_page(today)
+    app.activate_action("show-summary")
+    iterate()
+    assert isinstance(visible(window), SummaryPage)
+    window.nav.pop_to_page(today)
+
     # About: the troubleshooting page says what the database holds.
     app.activate_action("about")
     iterate()

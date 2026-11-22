@@ -36,6 +36,7 @@ class Application(Adw.Application):
         for name, callback in (("about", self._on_about),
                                ("preferences", self._on_preferences),
                                ("show-workouts", self._on_show_workouts),
+                               ("show-summary", self._on_show_summary),
                                ("show-latest-workout", self._on_latest_workout),
                                ("quit", self._on_quit)):
             action = Gio.SimpleAction.new(name, None)
@@ -94,6 +95,10 @@ class Application(Adw.Application):
     def _on_show_workouts(self, *_):
         if self._window():
             self._window().show_workouts()
+
+    def _on_show_summary(self, *_):
+        if self._window():
+            self._window().show_summary()
 
     def _on_latest_workout(self, *_):
         window = self._window()

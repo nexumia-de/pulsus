@@ -36,6 +36,7 @@ carries information alone.
 |---|---|---|
 | Today | one column of cards | two or three columns (flow box), clamped to 1100 px |
 | Metric | range buttons, headline, chart 220 px, number rows | clamped to 760 px |
+| Summary | three groups of rows: last 7 days, streak, records | same |
 | Workouts | rows by month | same |
 | Workout | duration, route 240 px, heart-rate chart, zone rows, kilometre rows, numbers | clamped to 760 px |
 | No database | status page with the paths searched and "Look Again" | same |

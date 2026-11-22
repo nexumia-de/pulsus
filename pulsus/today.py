@@ -6,7 +6,7 @@ from statistics import fmean
 
 from gi.repository import Adw, Gtk
 
-from pulsus import NAME, stats, text
+from pulsus import NAME, insight, stats, text
 from pulsus.card import Card
 from pulsus.charts import Series
 from pulsus.metrics import METRICS
@@ -62,6 +62,9 @@ class TodayPage(Adw.NavigationPage):
         self.workout_card = Card("Workouts", "pulsus-workout-symbolic")
         self.workout_card.connect("clicked", lambda *_: window.show_workouts())
         self.cards.append(self.workout_card)
+        self.summary_card = Card("Summary", "pulsus-steps-symbolic")
+        self.summary_card.connect("clicked", lambda *_: window.show_summary())
+        self.cards.append(self.summary_card)
         for child in list(_children(self.cards)):
             child.set_focusable(False)
 
@@ -108,6 +111,7 @@ class TodayPage(Adw.NavigationPage):
                 getattr(self, "_fill_" + metric.id.replace("-", "_"),
                         self._fill_level)(store, metric, card)
         self._fill_workout(store)
+        self._fill_summary(store)
         last = store.last_sample()
         now = datetime.now()
         if last is None:
@@ -227,6 +231,21 @@ class TodayPage(Adw.NavigationPage):
             parts.append(f"{distance / 1000:.2f} km")
         self.workout_card.show(text.duration(w.duration), kind_name(w),
                                " · ".join(parts))
+
+
+    def _fill_summary(self, store):
+        """The step-goal streak up to the day shown, and what the Summary
+        page says about the last seven days' steps."""
+        goal = self.window.settings.step_goal
+        current = insight.current_streak(store.daily_steps, goal, self.day)
+        # Complete days only: today has just begun or is still running.
+        last = min(self.day, date.today() - timedelta(days=1))
+        steps = store.daily_steps(last - timedelta(days=35), last)
+        lines = insight.week(steps, {}, {}, [], last)
+        note = f"Last 7 days: {lines[0].value} steps. {lines[0].note}" if lines else ""
+        self.summary_card.show(
+            str(current), "day streak" if current == 1 else "days streak",
+            f"At your goal of {text.number(goal)} steps. {note}".strip())
 
 
 def _children(flowbox):

@@ -49,3 +49,4 @@ it. Never real health data.
 | `heart-rate` | `app.show-metric('heart-rate')` |
 | `sleep` | `app.show-metric('sleep:day')` |
 | `workout` | `app.show-latest-workout` |
+| `summary` | `app.show-summary` |

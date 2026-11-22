@@ -6,7 +6,7 @@ from datetime import date, timedelta
 
 import pytest
 
-from pulsus import data, demo
+from pulsus import data, demo, insight
 from pulsus.metrics import METRICS
 
 BUDGET = 2.0   # seconds per page
@@ -33,8 +33,14 @@ def test_today_is_fast_with_a_year_of_history(year_store):
         for metric in METRICS:
             getattr(year_store, metric.daily)(today - timedelta(days=37), today)
         year_store.workouts(limit=1)
+        insight.current_streak(year_store.daily_steps, 1, today)   # all 365 days
         year_store.last_sample()
     assert _seconds(page) < BUDGET
+
+
+def test_summary_is_fast_with_a_year_of_history(year_store):
+    from pulsus import summary
+    assert _seconds(lambda: summary.gather(year_store, 8000)) < BUDGET
 
 
 @pytest.mark.parametrize("metric", METRICS, ids=lambda m: m.id)

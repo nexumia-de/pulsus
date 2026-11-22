@@ -57,6 +57,19 @@ current versions), on 2026-11-04 at the owner's request:
   numbers, normal range, "How It Is Measured". Day views: steps per
   hour, heart rate as 5-minute averages, sleep as a timeline, single
   readings as dots.
+- **Summary** (`insight.py`, `summary.py`): opened from its card on
+  Today or the menu. *Last 7 Days*: steps, sleep, resting heart rate
+  and workouts of the seven complete days up to yesterday against the
+  four weeks before, in the words of rule 3 ("about the same" under
+  5 %, "more/fewer", "higher/lower", never good or bad; no comparison
+  before 14 earlier days). *Step Goal Streak*: days in a row at the
+  step goal; today counts once it reached the goal and does not break
+  the streak before; a day without data breaks it; the longest streak
+  with its last day. *Records*: most steps in a day, longest workout,
+  longest distance, fastest average pace (workouts of 1 km and more),
+  each with its date; a workout record opens the workout. The Today
+  card shows the current streak and reads back only as far as the
+  streak reaches.
 - **Workouts**: by month.
 - **Workout**: duration and times; the route from the GPS track, to
   scale, north up, start as a dot and end as a square, a scale bar, no
@@ -69,5 +82,5 @@ current versions), on 2026-11-04 at the owner's request:
 
 # Not yet
 
-Sleep stages (Amazfish does not store them,
-[decision](decisions/amazfish-gaps.md)); records and streaks.
+Sleep stages: Amazfish does not store them
+([decision](decisions/amazfish-gaps.md)).

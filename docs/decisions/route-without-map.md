@@ -18,7 +18,7 @@ decisions without questions.
 The route is the track drawn to scale, north up, with start, end and a
 scale bar (`pulsus/workout/route.py`).
 
-- Map tiles need the network. Pulsus has none by decision
+- Map tiles need the network. Pulsus loads none by decision
   ([display only](display-only.md)), and a health app that never talks
   to a server is worth more than a street map behind a loop the user
   ran themselves. Asking a tile server for tiles would also tell it

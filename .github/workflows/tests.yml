@@ -32,6 +32,7 @@ jobs:
           "${apt[@]}" update -q
           "${apt[@]}" install -y -q --no-install-recommends \
             python3-pytest python3-gi gir1.2-gtk-4.0 gir1.2-adw-1 \
+            gir1.2-soup-3.0 gir1.2-secret-1 glib-networking \
             xvfb xauth appstream desktop-file-utils
       - name: Validate metadata
         run: |
@@ -42,4 +43,5 @@ jobs:
       - name: Run tests
         env:
           PYTHONPATH: .phosh-toolkit/lib
+          PHOSH_TOOLKIT_TEST_KEYRING: memory
         run: xvfb-run -a /usr/bin/python3 -m pytest -v

@@ -11,8 +11,9 @@ and the desktop.
 - Plan: [milestones](https://github.com/nexumia-de/pulsus/milestones); goals in [docs/roadmap.md](docs/roadmap.md).
 - **Display only** ([decision](docs/decisions/display-only.md)): Amazfish
   is the only program that talks to the watch. Pulsus never writes to
-  Amazfish's database, has no Bluetooth, no network and no sync of its
-  own, and keeps no health data outside its snapshot cache. Read
+  Amazfish's database, has no Bluetooth, no sync of its own and no network use for
+  data (the one exception is the user's own problem report, see
+  [dependencies](docs/dependencies.md#permissions)), and keeps no health data outside its snapshot cache. Read
   [docs/amazfish-data.md](docs/amazfish-data.md) before touching
   `pulsus/data/`.
 - Visible name: **Watch Health** (chosen by the owner on 2026-11-06,

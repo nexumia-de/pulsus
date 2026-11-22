@@ -34,6 +34,7 @@ class Window(Adw.ApplicationWindow):
         menu.append("Summary", "app.show-summary")
         menu.append("Workouts", "app.show-workouts")
         menu.append("Preferences", "app.preferences")
+        menu.append("Report a Problem…", "app.report-problem")
         menu.append(f"About {NAME}", "app.about")
         return menu
 

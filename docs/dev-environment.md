@@ -16,7 +16,8 @@ package; not needed for development).
 
 # Host packages (Ubuntu 24.04)
 
-After `bash ../phosh-toolkit/setup.sh`: `python3-pytest xvfb`. The
+After `bash ../phosh-toolkit/setup.sh`: `python3-pytest xvfb`, and
+`gir1.2-soup-3.0 gir1.2-secret-1` for the toolkit's feedback module. The
 cloud image's default `python3` has no `gi`; use `/usr/bin/python3.12`.
 Pycairo is not installed and not needed (charts use `Gsk`).
 
@@ -24,10 +25,11 @@ Pycairo is not installed and not needed (charts use `Gsk`).
 
 ```sh
 export PYTHONPATH=$PWD/../phosh-toolkit/lib                    # shared package
+export PHOSH_TOOLKIT_TEST_KEYRING=memory                       # tests, screenshots: never the real keyring
 PULSUS_DEMO=1 /usr/bin/python3.12 -m pulsus                      # demo person
 PULSUS_DATABASE=/path/to/amazfish.kexi /usr/bin/python3.12 -m pulsus
 dbus-run-session -- xvfb-run -a /usr/bin/python3.12 -m pytest   # all tests, as in CI
-../phosh-toolkit/scripts/screenshot.sh -i de.nexumia.Pulsus -d 6 -e PULSUS_DEMO=1 -e PYTHONPATH=$PYTHONPATH -o shot.png -- /usr/bin/python3.12 -m pulsus
+../phosh-toolkit/scripts/screenshot.sh -i de.nexumia.Pulsus -d 6 -e PULSUS_DEMO=1 -e PHOSH_TOOLKIT_TEST_KEYRING=memory -e PYTHONPATH=$PYTHONPATH -o shot.png -- /usr/bin/python3.12 -m pulsus
 ```
 
 Other states: `-a "app.show-metric('sleep:day')"`,

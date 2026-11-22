@@ -10,7 +10,7 @@ gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk  # noqa: E402
 
 from pulsus import (APP_ID, NAME, NIGHTLY, REPO_URL, SUPPORT_URL,  # noqa: E402
-                    VERSION_LABEL)
+                    VERSION, VERSION_LABEL)
 
 log = logging.getLogger("pulsus")
 
@@ -70,8 +70,11 @@ class Application(Adw.Application):
         else:
             self.source = Source()
         self.settings_store = settings.Store()
-        from phosh_toolkit import style
+        from phosh_toolkit import feedback, style
         style.apply(self.settings_store.load().style)
+        # "Report a Problem…": app.report-problem (docs/dependencies.md).
+        feedback.install(self, repo="nexumia-de/pulsus", app_name=NAME,
+                         version=VERSION_LABEL)
 
     def do_activate(self):
         from pulsus.window import Window
@@ -118,13 +121,14 @@ class Application(Adw.Application):
             PreferencesDialog(window).present(window)
 
     def _on_about(self, *_):
+        from phosh_toolkit import feedback
         dialog = Adw.AboutDialog(
             application_name=NAME,
             application_icon=APP_ID,
             version=VERSION_LABEL,
             developer_name="suitably",
             website=REPO_URL,
-            issue_url=f"{REPO_URL}/issues",
+            issue_url=feedback.issue_url("nexumia-de/pulsus", VERSION),
             license_type=Gtk.License.AGPL_3_0,
             comments="See the health data of your watch, as Amazfish downloads "
                      "it. Not affiliated with the Amazfish project or the watch "

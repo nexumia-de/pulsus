@@ -16,6 +16,8 @@ from pulsus import demo  # noqa: E402
 def xdg(tmp_path, monkeypatch):
     for name in ("XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME"):
         monkeypatch.setenv(name, str(tmp_path / name.lower()))
+    # "Report a Problem…" must never reach the real keyring.
+    monkeypatch.setenv("PHOSH_TOOLKIT_TEST_KEYRING", "memory")
     monkeypatch.delenv("PULSUS_DATABASE", raising=False)
     monkeypatch.delenv("PULSUS_DEMO", raising=False)
 

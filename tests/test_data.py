@@ -10,6 +10,7 @@ import pytest
 from pulsus import data as store
 from pulsus import demo
 from pulsus.data.values import KIND_SLEEP
+from pulsus.metrics import METRICS
 
 
 def make_db(path, minutes):
@@ -151,3 +152,14 @@ def test_demo_has_every_kind_of_data(demo_db):
     assert workouts and workouts[0].start >= workouts[-1].start
     assert workouts[0].number("distanceMeters") > 0
     assert s.workout(workouts[0].id).id == workouts[0].id
+
+
+def test_demo_person_has_every_value_from_midnight(tmp_path):
+    """The Today page of the demo person (screenshots, test_ui.py) shows
+    every metric at any time of day, also in the first minute."""
+    midnight = datetime.combine(date.today(), time())
+    db = store.Store(demo.create(tmp_path / "amazfish.kexi", now=midnight, days=3))
+    day = midnight.date()
+    for metric in METRICS:
+        assert day in getattr(db, metric.daily)(day, day), metric.id
+    db.close()

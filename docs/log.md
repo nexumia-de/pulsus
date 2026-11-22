@@ -1,5 +1,8 @@
 # Directory Update Log
 
+## 2026-11-22
+* **Fix**: the UI test (and the Tests run on `main` of 2026-11-17, 06:26 UTC) failed in the early hours: the demo person of `pulsus/demo.py` had no stress, SpO₂, HRV and temperature readings before the morning and could go to bed after midnight, so Today showed "–" cards. The demo person now has every value from the first minute of the day (readings around the clock, in bed by 23:30); `tests/test_data.py` checks it at midnight. The store screenshots no longer depend on the hour CI takes them.
+
 ## 2026-11-16
 * **Update**: phosh-toolkit pin raised from `v0.3.0` to `v0.4.0` (manifest, [dependencies](dependencies.md)). The `settings` and `style` modules, the only ones Pulsus uses, are unchanged between the tags; internal change, no changelog fragment.
 

@@ -80,8 +80,10 @@ def create(path, now=None, days=DAYS, seed=7):
     for n in range(-1, days):
         evening = first + timedelta(days=n)
         late = evening.weekday() >= 4
-        bed = datetime.combine(evening, time(23, 0)) + timedelta(
-            minutes=rng.randint(-40, 40) + (40 if late else 0))
+        # In bed by 23:30 at the latest, so every day has its night's
+        # sleep from midnight on.
+        bed = datetime.combine(evening, time(22, 40)) + timedelta(
+            minutes=rng.randint(-40, 30) + (20 if late else 0))
         wake = datetime.combine(evening + timedelta(days=1), time(6, 40)) + timedelta(
             minutes=rng.randint(-25, 30) + (75 if late else 0))
         nights.append((bed, wake))
@@ -117,7 +119,9 @@ def create(path, now=None, days=DAYS, seed=7):
             elif asleep:
                 kind = KIND_SLEEP
                 # Wake-ups now and then, a few minutes long.
-                if awake_until is None and rng.random() < 0.004:
+                deep = all(t < bed or t >= bed + timedelta(hours=1)
+                           for bed, _ in tonight)
+                if awake_until is None and deep and rng.random() < 0.004:
                     awake_until = t + timedelta(minutes=rng.randint(4, 18))
                 if awake_until is not None:
                     if t < awake_until:
@@ -141,17 +145,22 @@ def create(path, now=None, days=DAYS, seed=7):
                 hr = rest + 18 + 8 * math.sin(m / 90) + rng.gauss(0, 4)
                 if 7 * 60 <= m <= 22 * 60 and rng.random() < 0.25:
                     steps = rng.randint(2, 30)
-            if hr is not None and rng.random() < 0.06:
+            if hr is not None and m and rng.random() < 0.06:
                 hr = None              # the watch missed a reading
             minutes.append((int(t.timestamp()), _iso(t), 1, 1, intensity, steps,
                             kind, 255 if hr is None else int(round(hr))))
-            if not asleep and kind != KIND_CHARGING and m % 30 == 0 and m > 6 * 60:
+            # Stress and SpO₂ are measured around the clock, so the day has
+            # its readings from its first minute on.
+            if kind != KIND_CHARGING and m % 30 == 0:
                 level = 28 + 14 * math.sin(m / 200) + (12 if day.weekday() < 5 else 0)
+                if asleep:
+                    level -= 12
                 stress.append((int(t.timestamp()), _iso(t),
                                max(1, min(99, int(level + rng.gauss(0, 8)))), 1))
-            if not asleep and kind != KIND_CHARGING and m % 120 == 30 and m > 8 * 60:
+            if kind != KIND_CHARGING and m % 120 == 0:
                 spo2.append((int(t.timestamp()), _iso(t), 1, rng.choice((96, 97, 97, 98, 98, 99))))
-        reading = datetime.combine(day, time(5, 30))
+        # HRV and skin temperature: one reading in the night.
+        reading = datetime.combine(day, time())
         if reading <= now:
             hrv.append((int(reading.timestamp()), _iso(reading),
                         int(42 + 10 * fitness + rng.gauss(0, 5))))

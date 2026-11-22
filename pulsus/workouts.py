@@ -33,6 +33,13 @@ NUMBERS = (
 )
 
 
+# Amazfish fetches workouts only from its Sports page, one per tap
+# (docs/amazfish-data.md#workouts); its hourly sync does not.
+NO_WORKOUTS = ("Amazfish downloads workouts only when asked. In Amazfish, open "
+               "Sports and choose Download Next Activity, once for every "
+               "workout on the watch. They show here right after.")
+
+
 def kind_name(workout):
     if workout.kind in KINDS:
         return KINDS[workout.kind]
@@ -70,9 +77,7 @@ class WorkoutsPage(Adw.NavigationPage):
             group = Adw.PreferencesGroup()
             group.add(Adw.StatusPage(icon_name="pulsus-workout-symbolic",
                                      title="No Workouts",
-                                     description="Workouts recorded on the watch "
-                                                 "show here after Amazfish has "
-                                                 "downloaded them."))
+                                     description=NO_WORKOUTS))
             self.page.add(group)
             self.groups.append(group)
             return

@@ -37,3 +37,17 @@ are 0 or 255 ([what it shows](amazfish-data.md#checking-on-the-phone)).
 
 A value that is off becomes a new issue with the label `on device`,
 without the real numbers.
+
+# Workouts from Amazfish (#8)
+
+Amazfish downloads workouts only from its Sports page
+([why](amazfish-data.md#workouts)).
+
+- [ ] In Amazfish open **Sports** and choose **Download Next Activity**,
+      once per workout on the watch.
+- [ ] Watch Health ▸ Workouts lists them (About ▸ Troubleshooting shows
+      the `sports_data` row count).
+- [ ] If `sports_data` has rows and Workouts stays empty, that is a bug
+      in Pulsus: open an issue with the Troubleshooting text.
+- [ ] If Download Next Activity stores nothing for the Balance, that is
+      a gap in Amazfish and belongs in the report below.

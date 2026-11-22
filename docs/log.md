@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-22
+* **Update**: [Amazfish's data](amazfish-data.md#workouts): Amazfish (at `730b542`) fetches workouts only from its Sports page, one per "Download Next Activity"; the hourly sync never does. That explains an empty `sports_data` with real data (#8). The empty Workouts page now says so; the check on the phone is in [owner checks](owner-checks.md#workouts-from-amazfish-8).
 * **Creation**: [Owner checks](owner-checks.md), the device and account work left after the open issues were closed; first list: the comparison with the owner's real data (#1). To make it possible without a shell on the phone, About ▸ Troubleshooting now shows what Amazfish's database holds (`pulsus/data/report.py`, counts and dates only; [Amazfish's data](amazfish-data.md#checking-on-the-phone)). `tests/test_speed.py` keeps Today and the Year views under two seconds on a year of demo data.
 * **Fix**: the UI test (and the Tests run on `main` of 2026-11-17, 06:26 UTC) failed in the early hours: the demo person of `pulsus/demo.py` had no stress, SpO₂, HRV and temperature readings before the morning and could go to bed after midnight, so Today showed "–" cards. The demo person now has every value from the first minute of the day (readings around the clock, in bed by 23:30); `tests/test_data.py` checks it at midnight. The store screenshots no longer depend on the hour CI takes them.
 

@@ -24,6 +24,15 @@ sources:
   - id: af-summary
     resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/daemon/src/devices/huami/zeppos/zepposactivitysummaryparser.cpp
     title: Amazfish ZeppOsActivitySummaryParser (workout meta keys and units)
+  - id: af-fetcher
+    resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/daemon/src/devices/huami/huamifetcher.cpp
+    title: Amazfish HuamiFetcher::startFetchData (which request fetches what)
+  - id: af-sync
+    resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/daemon/src/deviceinterface.cpp
+    title: Amazfish DeviceInterface (hourly sync fetches TYPE_ACTIVITY only)
+  - id: af-sports-page
+    resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/ui/qml/pages/SportsSummaryPage.qml
+    title: Amazfish SportsSummaryPage.qml ("Download Next Activity" fetches TYPE_GPS_TRACK)
   - id: af-kind
     resource: https://github.com/piggz/harbour-amazfish/blob/730b54257d72da8b24df6aa77a99490a01cec49c/lib/src/activitykind.h
     title: Amazfish lib/src/activitykind.h (workout kinds)
@@ -115,6 +124,21 @@ columns are not used.
 | `sports_meta` | `sport_id`, `key`, `value`, `unit` | Workout numbers: `distanceMeters`, `workoutDuration` (s), `averageHR`, `maxHR`, `caloriesBurnt`, `paceAvg` (min/km), `steps`, …[^af-summary] |
 
 Not read yet: `spo2sleep`, `info_log` (battery), the GPX track.
+
+## Workouts
+
+Amazfish fetches a workout only for a `TYPE_GPS_TRACK`
+request[^af-fetcher]. Its hourly automatic sync and its "Download Data"
+menu item ask for `TYPE_ACTIVITY` only[^af-sync]; the one place that
+asks for workouts is the **Sports** page ("Sports Activities") with the
+action **Download Next Activity**, which fetches one workout, the next
+after the last one fetched, per tap[^af-sports-page]. So `sports_data`
+stays empty until the user does that, however often the watch syncs.
+This is the likely reason for "no workouts" with real data (#8, reported
+2026-11-06); the row count is in About ▸ Troubleshooting. Pulsus's empty
+Workouts page says how to download them. Pulsus's query matches the
+table as Amazfish creates it (`start_timestamp` and `end_timestamp` are
+unsigned integers in Unix seconds, written with the row[^af-schema]).
 
 ## Heart rate
 

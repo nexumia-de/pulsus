@@ -138,6 +138,34 @@ def test_new_snapshot_refreshes_the_pages(app, tmp_path):
     window.destroy()
 
 
+def test_no_workouts_says_how_amazfish_downloads_them(app, tmp_path):
+    from pulsus import demo, workouts
+    db = demo.create(tmp_path / "amazfish.kexi", days=3)
+    con = __import__("sqlite3").connect(db)
+    con.execute("DELETE FROM sports_data")
+    con.commit()
+    con.close()
+    window = new_window(app, db)
+    assert not visible(window).workout_card.get_parent().get_visible()
+    window.show_workouts()
+    iterate()
+    page = visible(window)
+    assert isinstance(page, workouts.WorkoutsPage)
+    status = page.groups[0].get_first_child()
+    found = []
+
+    def walk(widget):
+        if isinstance(widget, Adw.StatusPage):
+            found.append(widget)
+        child = widget.get_first_child()
+        while child is not None:
+            walk(child)
+            child = child.get_next_sibling()
+    walk(status)
+    assert found and "Download Next Activity" in found[0].get_description()
+    window.destroy()
+
+
 def test_without_a_database(app, monkeypatch, tmp_path):
     monkeypatch.setattr(location.Path, "home", lambda: tmp_path)
     from pulsus.window import Window
